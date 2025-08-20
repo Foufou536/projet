@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Commerçant du Mois</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      margin: 0;
+      background-color: #fff3ed;
+      color: #333;
+    }
+
+    header {
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ccc;
+      background-color: #fff3ed;
+    }
+
+    header h1 {
+      font-size: 24px;
+      margin: 0;
+    }
+
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #111;
+      font-weight: 500;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .commercant-img {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+      border-radius: 14px;
+      margin: 20px 0;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .commercant-img:hover {
+      transform: scale(1.03);
+    }
+
+    .btn-retour {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn-retour:hover {
+      background-color: #0056b3;
+    }
+
+    .insta {
+      margin-top: 20px;
+      display: inline-block;
+      color: #e1306c;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .insta:hover {
+      text-decoration: underline;
+    }
+
+    p {
+      font-size: 18px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Bandeau de navigation -->
+  <header>
+    <h1>Newsletter Locale</h1>
+    <nav>
+      <a href="/">Accueil</a>
+      <a href="/commercant">🏅 Commerçant du Mois</a>
+      <a href="/apropos">À propos</a>
+      <a href="/newsletter" target="_blank">Newsletter</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLf0q_MuR5ADAUHAJ7YKe65E52zUlqrm84A2K96OcSPS4VcA/viewform" target="_blank">Proposer</a>
+    </nav>
+  </header>
+
+  <div class="container">
+   <h2 style="font-size: 26px; color: #333; margin-bottom: 10px;">
+  🏅 Commerçant du mois de juin
+</h2>
+
+    <a href="https://www.constructeur-maison-cantal.com/" target="_blank">
+      <img src="/static/imageteste.jpg" alt="Commerçant du Mois" class="commercant-img">
+    </a>
+    <p>
+      Chaque mois, vous élisez le commerçant préféré de la ville via notre sondage Instagram 📊.<br>
+      Le gagnant est mis à l’honneur ici, avec son image et ses infos ✨<br><br>
+      👉 Merci de continuer à soutenir vos commerçants locaux !
+    </p>
+
+    <a class="insta" href="https://www.instagram.com/la.newsletteraurillac/?hl=fr" target="_blank">📸 Suivre la newsletter sur Instagram</a><br>
+
+    <a class="btn-retour" href="/">← Retour à l’accueil</a>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter Locale - Succès</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #fefefe;
+      color: #222;
+    }
+
+    header.hero {
+      background-image: url('/static/banner.jpg');
+      background-size: cover;
+      background-position: center;
+      padding: 100px;
+      text-align: center;
+      color: white;
+    }
+
+    header.hero h1 {
+      font-size: 36px;
+      font-weight: 700;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: center;
+    }
+
+    .message-box {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  padding: 30px;
+  margin-bottom: 25px;
+  animation: fadeIn 1s ease-out;
+  text-align: center; /* <-- ajout pour centrer le texte */
+}
+    
+
+    .message-box h2 {
+      font-size: 22px;
+      color: #16a34a;
+      margin-bottom: 12px;
+    }
+
+    .message-box p {
+      font-size: 16px;
+      color: #333;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+
+    .commercant {
+      background: #fdf7ee;
+      padding: 30px;
+      border-radius: 14px;
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .commercant img {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 14px;
+      margin-bottom: 15px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.2);
+    }
+
+    .commercant h2 {
+      margin: 10px 0 6px;
+      font-size: 22px;
+      color: #cc6600;
+    }
+
+    .commercant p {
+      margin: 0;
+      font-size: 16px;
+      color: #444;
+      max-width: 500px;
+      margin-inline: auto;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <h1>Bienvenue sur notre Newsletter locale</h1>
+  </header>
+
+  <div class="message-box">
+  <h2>{{ message }}</h2>
+  <p style="font-size:17px; color:#16a34a; margin-bottom:12px;">
+    🎉 Merci beaucoup pour votre inscription !
+  </p>
+  <p>Vous faites maintenant partie des {{ subscriber_count }} abonnés 💌</p>
+  <a href="/" class="button">🏠 Retour à l’accueil</a>
+</div>
