@@ -1,11 +1,26 @@
-from flask import Flask, render_template, request, redirect
-import json
+from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
 import os
+import json
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-SUBSCRIBERS_FILE = 'subscribers.json'
+# ✅ Config Base de données (URL Render)
+# On remplace directement par ton URL Render (pas besoin d’os.getenv ici)
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://newsletter_db_z17i_user:fGgTz6hYw0EeurzKpzIqRd4lUsNz6Wup@dpg-d2m849v5r7bs73efbl60-a/newsletter_db_z17i"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+
+# ✅ Modèle SQL pour les abonnés
+class Subscriber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+
+    def __repr__(self):
+        return f"<Subscriber {self.email}>"
+
+# Fichiers encore utiles pour stats & meta
 STATS_FILE = 'stats.json'
 META_FILE = 'newsletter_meta.json'
 
@@ -26,53 +41,43 @@ def load_newsletter_content():
     except FileNotFoundError:
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
-# Autres fonctions existantes conservées (inchangées) :
-def load_subscribers():
-    if not os.path.exists(SUBSCRIBERS_FILE):
-        return []
-    with open(SUBSCRIBERS_FILE, "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return []
-
-def save_subscribers(subscribers):
-    with open(SUBSCRIBERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(subscribers, f, indent=2)
-
+# ✅ Page d’accueil (compte abonnés depuis la DB)
 @app.route("/")
 def index():
-    subscribers = load_subscribers()
+    subscribers = Subscriber.query.all()
     return render_template("index.html", subscriber_count=len(subscribers))
 
+# ✅ Route inscription avec PostgreSQL
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     email = request.form.get("email", "").strip().lower()
     if "@" not in email or "." not in email:
         return "Adresse email invalide", 400
 
-    subscribers = load_subscribers()
-    if email in subscribers:
-        return render_template("already_subscribed.html", subscriber_count=len(subscribers))
+    existing = Subscriber.query.filter_by(email=email).first()
+    if existing:
+        return render_template("already_subscribed.html", subscriber_count=Subscriber.query.count())
     else:
-        subscribers.append(email)
-        save_subscribers(subscribers)
-        return render_template("success.html", subscriber_count=len(subscribers))
+        new_sub = Subscriber(email=email)
+        db.session.add(new_sub)
+        db.session.commit()
+        return render_template("success.html", subscriber_count=Subscriber.query.count())
 
-# ✅ Nouvelle route propre pour afficher la newsletter avec délai de 48h
+# ✅ Newsletter avec délai de 48h
 @app.route("/newsletter")
 def newsletter():
     content = load_newsletter_content()
     return render_template("newsletter_page.html", newsletter_content=content)
 
+# ✅ Stats (les abonnés viennent de la DB, stats.json reste)
 @app.route("/stats")
 def stats():
     try:
-        subscribers = load_subscribers()
+        subscribers_count = Subscriber.query.count()
         with open(STATS_FILE, "r", encoding="utf-8") as f:
             stats = json.load(f)
         return render_template("stats.html",
-                               nb_abonnes=len(subscribers),
+                               nb_abonnes=subscribers_count,
                                vues=stats.get("views", 0))
     except Exception as e:
         return f"Erreur lors de l'affichage des stats : {e}"
@@ -85,9 +90,12 @@ def apropos():
 def commercant():
     return render_template("commercant.html")
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
+# ✅ Page test newsletter
 @app.route("/newsletter-test")
 def newsletter_test():
     return app.send_static_file("newsletter_draft.html")
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()  # ✅ Crée la table automatiquement si elle n'existe pas
+    app.run(debug=True)
