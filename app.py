@@ -6,9 +6,11 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-# ✅ Config Base de données (URL Render)
-# On remplace directement par ton URL Render (pas besoin d’os.getenv ici)
-app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://newsletter_db_z17i_user:fGgTz6hYw0EeurzKpzIqRd4lUsNz6Wup@dpg-d2m849v5r7bs73efbl60-a/newsletter_db_z17i"
+# ✅ Config Base de données (PostgreSQL Render en priorité, sinon SQLite en local)
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
+    "DATABASE_URL",
+    "postgresql://newsletter_db_z17i_user:fGgTz6hYw0EeurzKpzIqRd4lUsNz6Wup@dpg-d2m849v5r7bs73efbl60-a/newsletter_db_z17i"
+)
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
@@ -24,7 +26,7 @@ class Subscriber(db.Model):
 STATS_FILE = 'stats.json'
 META_FILE = 'newsletter_meta.json'
 
-# Charger le contenu de la newsletter (ancienne ou nouvelle selon la date)
+# ✅ Charger le contenu de la newsletter avec délai de 48h
 def load_newsletter_content():
     use_new = False
     if os.path.exists(META_FILE):
@@ -41,7 +43,7 @@ def load_newsletter_content():
     except FileNotFoundError:
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
-# ✅ Page d’accueil (compte abonnés depuis la DB)
+# ✅ Page d’accueil (compte abonnés depuis PostgreSQL)
 @app.route("/")
 def index():
     subscribers = Subscriber.query.all()
@@ -98,4 +100,4 @@ def newsletter_test():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()  # ✅ Crée la table automatiquement si elle n'existe pas
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
