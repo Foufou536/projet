@@ -1,12 +1,24 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import json
 import os
+import json
 from datetime import datetime, timedelta
-from email_validator import validate_email, EmailNotValidError  # ✅ ajout validation email
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+from email_validator import validate_email, EmailNotValidError
+from dotenv import load_dotenv
+
+# ==========================
+# 🔐 Chargement variables d'environnement
+# ==========================
+load_dotenv()  # permet de lire le fichier .env en local
 
 app = Flask(__name__)
-app.secret_key = "xbKcrhToXM4iJtRKNA@zRbFLcnF7M!J@dnmLyQMx"  # ⚠️ Mets un mot de passe fort ici
 
+# 🔑 Lecture des secrets depuis variables d'environnement
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "motdepasse_par_defaut")
+app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut")
+
+# ==========================
+# 📁 Fichiers utilisés
+# ==========================
 SUBSCRIBERS_FILE = 'subscribers.json'
 STATS_FILE = 'stats.json'
 META_FILE = 'newsletter_meta.json'
@@ -61,7 +73,7 @@ def subscribe():
     # ✅ Validation stricte de l'email
     try:
         valid = validate_email(email)
-        email = valid.email  # normalisation (ex: suppression d’espaces, accents, etc.)
+        email = valid.email
     except EmailNotValidError:
         return "Adresse email invalide", 400
 
@@ -103,20 +115,21 @@ def newsletter_test():
     return app.send_static_file("newsletter_draft.html")
 
 # ==========================
-# 🔑 Interface Admin
+# 🔑 Interface Admin sécurisée
 # ==========================
-ADMIN_PASSWORD = "o3krs@ipcQ@E88mTNFo5boiok#M!BiXb7c4D$f#g"  # ⚠️ Change ça avant de mettre en ligne
-
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
     if request.method == "POST":
         password = request.form.get("password")
         if password == ADMIN_PASSWORD:
             session["admin"] = True
+            flash("Connexion réussie ✅", "success")
             return redirect(url_for("admin_dashboard"))
         else:
-            return "Mot de passe incorrect", 403
+            flash("Mot de passe incorrect ❌", "danger")
+            return redirect(url_for("admin_login"))
     return """
+        <h1>Connexion admin</h1>
         <form method="post">
             <input type="password" name="password" placeholder="Mot de passe admin" required>
             <button type="submit">Connexion</button>
