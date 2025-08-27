@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, session
 import json
 import os
 from datetime import datetime, timedelta
+from email_validator import validate_email, EmailNotValidError  # ✅ ajout validation email
 
 app = Flask(__name__)
 app.secret_key = "xbKcrhToXM4iJtRKNA@zRbFLcnF7M!J@dnmLyQMx"  # ⚠️ Mets un mot de passe fort ici
@@ -56,7 +57,12 @@ def index():
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     email = request.form.get("email", "").strip().lower()
-    if "@" not in email or "." not in email:
+
+    # ✅ Validation stricte de l'email
+    try:
+        valid = validate_email(email)
+        email = valid.email  # normalisation (ex: suppression d’espaces, accents, etc.)
+    except EmailNotValidError:
         return "Adresse email invalide", 400
 
     subscribers = load_subscribers()
