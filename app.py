@@ -1,11 +1,22 @@
 from flask import Flask, render_template, request, redirect
+from flask_sqlalchemy import SQLAlchemy
 import json
 import os
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
-SUBSCRIBERS_FILE = 'subscribers.json'
+# --- Configuration base de données ---
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
+# --- Modèle pour les abonnés ---
+class Subscriber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+
 STATS_FILE = 'stats.json'
 META_FILE = 'newsletter_meta.json'
 
@@ -26,24 +37,11 @@ def load_newsletter_content():
     except FileNotFoundError:
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
-# Autres fonctions existantes conservées (inchangées) :
-def load_subscribers():
-    if not os.path.exists(SUBSCRIBERS_FILE):
-        return []
-    with open(SUBSCRIBERS_FILE, "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return []
-
-def save_subscribers(subscribers):
-    with open(SUBSCRIBERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(subscribers, f, indent=2)
-
+# --- Routes ---
 @app.route("/")
 def index():
-    subscribers = load_subscribers()
-    return render_template("index.html", subscriber_count=len(subscribers))
+    total = Subscriber.query.count()
+    return render_template("index.html", subscriber_count=total)
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
@@ -51,15 +49,16 @@ def subscribe():
     if "@" not in email or "." not in email:
         return "Adresse email invalide", 400
 
-    subscribers = load_subscribers()
-    if email in subscribers:
-        return render_template("already_subscribed.html", subscriber_count=len(subscribers))
-    else:
-        subscribers.append(email)
-        save_subscribers(subscribers)
-        return render_template("success.html", subscriber_count=len(subscribers))
+    existing = Subscriber.query.filter_by(email=email).first()
+    if existing:
+        return render_template("already_subscribed.html", subscriber_count=Subscriber.query.count())
 
-# ✅ Nouvelle route propre pour afficher la newsletter avec délai de 48h
+    new_sub = Subscriber(email=email)
+    db.session.add(new_sub)
+    db.session.commit()
+
+    return render_template("success.html", subscriber_count=Subscriber.query.count())
+
 @app.route("/newsletter")
 def newsletter():
     content = load_newsletter_content()
@@ -68,11 +67,11 @@ def newsletter():
 @app.route("/stats")
 def stats():
     try:
-        subscribers = load_subscribers()
+        total = Subscriber.query.count()
         with open(STATS_FILE, "r", encoding="utf-8") as f:
             stats = json.load(f)
         return render_template("stats.html",
-                               nb_abonnes=len(subscribers),
+                               nb_abonnes=total,
                                vues=stats.get("views", 0))
     except Exception as e:
         return f"Erreur lors de l'affichage des stats : {e}"
@@ -85,9 +84,13 @@ def apropos():
 def commercant():
     return render_template("commercant.html")
 
-if __name__ == "__main__":
-    app.run(debug=True)
-
 @app.route("/newsletter-test")
 def newsletter_test():
     return app.send_static_file("newsletter_draft.html")
+
+# --- Création de la base au démarrage ---
+with app.app_context():
+    db.create_all()
+
+if __name__ == "__main__":
+    app.run(debug=True)
