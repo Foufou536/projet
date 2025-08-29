@@ -2,164 +2,56 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Newsletter Locale</title>
+
+  <!-- Empêche l’onglet ouvert via target=_blank d’accéder à window.opener -->
+  <meta name="referrer" content="no-referrer-when-downgrade" />
+
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #fff3ed;
-      color: #222;
-      height: 100vh;
-      overflow: hidden;
+      background-color: #fff3ed; color: #222;
+      height: 100vh; overflow: hidden;
     }
-
-    header {
-      padding: 20px 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ccc;
-      background-color: #fff3ed;
-    }
-
-    header h1 {
-      font-size: 24px;
-      margin: 0;
-    }
-
-    nav a {
-      margin-left: 20px;
-      text-decoration: none;
-      color: #111;
-      font-weight: 500;
-    }
-
-    .hero {
-      padding: 30px 20px;
-      text-align: center;
-      position: relative;
-    }
-
-    .hero h2 {
-      font-size: 36px;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
-
-    .newsletter-signup {
-      margin-bottom: 20px;
-    }
-
+    header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; background-color: #fff3ed; }
+    header h1 { font-size: 24px; margin: 0; }
+    nav a { margin-left: 20px; text-decoration: none; color: #111; font-weight: 500; }
+    .hero { padding: 30px 20px; text-align: center; position: relative; }
+    .hero h2 { font-size: 36px; font-weight: 600; margin-bottom: 20px; }
+    .newsletter-signup { margin-bottom: 20px; }
     .newsletter-signup input[type="email"] {
-      padding: 10px;
-      width: 250px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 10px; width: 250px; border-radius: 8px; border: 1px solid #ccc;
     }
-
-    .newsletter-signup input[type="submit"] {
-      padding: 10px 20px;
-      border-radius: 8px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      margin-left: 10px;
-      cursor: pointer;
+    .newsletter-signup button[type="submit"] {
+      padding: 10px 20px; border-radius: 8px; background-color: #007bff; color: #fff; border: none; margin-left: 10px; cursor: pointer;
     }
-
-    .subscriber-count {
-      font-size: 16px;
-      margin-bottom: 20px;
-      color: #444;
-    }
-
+    .subscriber-count { font-size: 16px; margin-bottom: 20px; color: #444; }
     .partner-strip {
-      position: absolute;
-      top: 65%;
-      left: 0;
-      transform: translateY(-50%);
-      width: 100%;
-      overflow: hidden;
-      z-index: 0;
-      pointer-events: none;
+      position: absolute; top: 65%; left: 0; transform: translateY(-50%);
+      width: 100%; overflow: hidden; z-index: 0; pointer-events: none;
     }
-
     .partner-strip .logos {
-      display: flex;
-      align-items: center;
-      gap: 60px;
+      display: flex; align-items: center; gap: 60px;
       animation: scroll 30s linear infinite;
-      white-space: nowrap;
-      padding: 10px 0;
-      width: max-content;
+      white-space: nowrap; padding: 10px 0; width: max-content;
     }
-
-    .partner-strip .logos a {
-      pointer-events: auto;
-    }
-
-    .partner-strip .logos img {
-      height: 70px;
-      opacity: 0.75;
-      transition: transform 0.2s ease;
-    }
-
-    .partner-strip .logos img:hover {
-      transform: scale(1.1);
-      opacity: 1;
-    }
-
-    .partner-strip .logos .label {
-      font-size: 20px;
-      font-weight: bold;
-      color: #333;
-      white-space: nowrap;
-      margin-right: 30px;
-    }
-
-    @keyframes scroll {
-      0% { transform: translateX(120%); }
-      100% { transform: translateX(-100%); }
-    }
-
-    .hero img.banner {
-      width: 100%;
-      max-width: 800px;
-      border-radius: 40px;
-      z-index: 1;
-      position: relative;
-    }
-
-    .actions {
-      text-align: center;
-      margin: 20px 0;
-    }
-
+    .partner-strip .logos a { pointer-events: auto; }
+    .partner-strip .logos img { height: 70px; opacity: 0.75; transition: transform 0.2s ease; }
+    .partner-strip .logos img:hover { transform: scale(1.1); opacity: 1; }
+    .partner-strip .logos .label { font-size: 20px; font-weight: bold; color: #333; white-space: nowrap; margin-right: 30px; }
+    @keyframes scroll { 0% { transform: translateX(120%); } 100% { transform: translateX(-100%); } }
+    .hero img.banner { width: 100%; max-width: 800px; border-radius: 40px; z-index: 1; position: relative; }
+    .actions { text-align: center; margin: 20px 0; }
     .actions a {
-      display: inline-block;
-      padding: 12px 20px;
-      border-radius: 12px;
-      text-decoration: none;
-      font-weight: bold;
-      margin: 10px;
-      font-size: 16px;
-      background-color: #ff8a5c;
-      color: white;
+      display: inline-block; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; margin: 10px; font-size: 16px; background-color: #ff8a5c; color: #fff;
     }
+    .actions a:hover { background-color: #e06c3e; }
+    footer { padding: 10px; text-align: center; font-size: 14px; color: #555; background-color: #fff3ed; }
 
-    .actions a:hover {
-      background-color: #e06c3e;
-    }
-
-    footer {
-      padding: 10px;
-      text-align: center;
-      font-size: 14px;
-      color: #555;
-      background-color: #fff3ed;
-    }
+    /* masquage accessible pour le champ piège */
+    .hp-wrap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
   </style>
 </head>
 <body>
@@ -170,45 +62,69 @@
       <a href="/">Accueil</a>
       <a href="/commercant">🏅 Commerçant du Mois</a>
       <a href="/apropos">À propos</a>
-      <a href="/newsletter" target="_blank">Newsletter</a>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLf0q_MuR5ADAUHAJ7YKe65E52zUlqrm84A2K96OcSPS4VcA/viewform" target="_blank">Proposer</a>
+      <a href="/newsletter" target="_blank" rel="noopener noreferrer">Newsletter</a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLf0q_MuR5ADAUHAJ7YKe65E52zUlqrm84A2K96OcSPS4VcA/viewform"
+         target="_blank" rel="noopener noreferrer">Proposer</a>
     </nav>
   </header>
 
   <div class="hero">
-  <h2>La newsletter locale qui soutient vos commerçants et PME</h2>
-  <p style="font-size: 1.3em; color: #444; margin-top: -10px;">
-    📩 Abonne-toi pour profiter de bons plans en avant-première !
-  </p>
+    <h2>La newsletter locale qui soutient vos commerçants et PME</h2>
+    <p style="font-size: 1.3em; color: #444; margin-top: -10px;">
+      📩 Abonne-toi pour profiter de bons plans en avant-première !
+    </p>
 
-  <!-- Formulaire d’inscription -->
-  <form class="newsletter-signup" action="/subscribe" method="post">
-    <input type="email" name="email" placeholder="Entrez votre email" required>
-    <input type="submit" value="S'inscrire">
-  </form>
+    <!-- Formulaire d’inscription sécurisé -->
+    <form id="signup" class="newsletter-signup" action="/subscribe" method="post" novalidate>
+      <!-- CSRF si dispo côté serveur (ne casse rien si absent) -->
+      {% if csrf_token %}<input type="hidden" name="csrf_token" value="{{ csrf_token }}">{% endif %}
+
+      <!-- Timestamp anti-bot/submit ultra rapide -->
+      <input type="hidden" name="ts" value="{{ (datetime.utcnow().timestamp() | int) if datetime else '' }}">
+
+      <!-- Champ honeypot anti-bot (à vérifier côté serveur) -->
+      <div class="hp-wrap" aria-hidden="true">
+        <label for="website">Ne pas remplir ce champ</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <input
+        type="email"
+        name="email"
+        inputmode="email"
+        autocomplete="email"
+        placeholder="Entrez votre email"
+        aria-label="Adresse e-mail"
+        required
+        minlength="6"
+        maxlength="254"
+        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+      >
+      <button type="submit" id="submitBtn">S'inscrire</button>
+    </form>
 
     <p class="subscriber-count">📬 <strong>{{ subscriber_count }}</strong> personnes sont déjà inscrites !</p>
 
     <!-- Image principale -->
-    <img src="/static/banner.jpg" alt="Photo de la ville" class="banner">
+    <img src="/static/banner.jpg" alt="Photo de la ville" class="banner" loading="lazy" width="800" height="420">
 
     <!-- Logos défilants -->
     <div class="partner-strip">
       <div class="logos">
         <span class="label">🤝 Nos partenaires</span>
-        <a href="https://elitemoto15.com/" target="_blank">
+        <a href="https://elitemoto15.com/" target="_blank" rel="noopener noreferrer">
           <img src="/static/logo1.jpg" alt="Partenaire 1">
         </a>
-        <a href="https://www.rouchy.fr/aurillac/" target="_blank">
+        <a href="https://www.rouchy.fr/aurillac/" target="_blank" rel="noopener noreferrer">
           <img src="/static/logo2.png" alt="Partenaire 2">
         </a>
-        <a href="https://www.mercedes-benz.fr/" target="_blank">
+        <a href="https://www.mercedes-benz.fr/" target="_blank" rel="noopener noreferrer">
           <img src="/static/logo3.jpg" alt="Partenaire 3">
         </a>
-        <a href="https://www.quincailleriegervais.fr/fr/" target="_blank">
+        <a href="https://www.quincailleriegervais.fr/fr/" target="_blank" rel="noopener noreferrer">
           <img src="/static/logo4.png" alt="Partenaire 4">
         </a>
-        <a href="https://www.gedimat.fr/" target="_blank">
+        <a href="https://www.gedimat.fr/" target="_blank" rel="noopener noreferrer">
           <img src="/static/logo5.png" alt="Partenaire 5">
         </a>
       </div>
@@ -216,8 +132,9 @@
   </div>
 
   <div class="actions">
-    <a href="/newsletter" target="_blank">📨 Voir la dernière newsletter</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLf0q_MuR5ADAUHAJ7YKe65E52zUlqrm84A2K96OcSPS4VcA/viewform" target="_blank">✍️ Proposer un commerce</a>
+    <a href="/newsletter" target="_blank" rel="noopener noreferrer">📨 Voir la dernière newsletter</a>
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfLf0q_MuR5ADAUHAJ7YKe65E52zUlqrm84A2K96OcSPS4VcA/viewform"
+       target="_blank" rel="noopener noreferrer">✍️ Proposer un commerce</a>
     <a href="/apropos">ℹ️ À propos</a>
   </div>
 
@@ -225,5 +142,36 @@
     © 2025 Newsletter Locale — Tous droits réservés
   </footer>
 
+  <script>
+    // Petite protection UX : empêche les doubles clics et valide côté client
+    (function () {
+      var form = document.getElementById('signup');
+      var btn = document.getElementById('submitBtn');
+
+      form.addEventListener('submit', function (e) {
+        var email = form.elements['email'];
+        var website = form.elements['website']; // honeypot
+
+        // si le honeypot est rempli => bot probable
+        if (website && website.value.trim() !== '') {
+          e.preventDefault();
+          return false;
+        }
+
+        // validation simple côté client (complément de la validation serveur)
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!re.test(email.value)) {
+          e.preventDefault();
+          alert("Merci d’entrer une adresse e-mail valide.");
+          email.focus();
+          return false;
+        }
+
+        // désactive le bouton pour éviter les doubles envois
+        btn.disabled = true;
+        btn.textContent = "Envoi…";
+      });
+    })();
+  </script>
 </body>
 </html>

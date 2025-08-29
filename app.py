@@ -4,6 +4,8 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
+from flask_wtf.csrf import CSRFProtect  # ✅ Ajout pour la sécurité
+import time
 
 # ==========================
 # 🔐 Chargement variables d'environnement
@@ -15,6 +17,9 @@ app = Flask(__name__)
 # 🔑 Lecture des secrets depuis variables d'environnement
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "motdepasse_par_defaut")
 app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut")
+
+# ✅ Activation protection CSRF
+csrf = CSRFProtect(app)
 
 # ==========================
 # 📁 Fichiers utilisés
@@ -64,11 +69,23 @@ def save_subscribers(subscribers):
 @app.route("/")
 def index():
     subscribers = load_subscribers()
+    # ✅ Stocke le moment où la page a été chargée pour détecter les soumissions trop rapides
+    session["form_start_time"] = time.time()
     return render_template("index.html", subscriber_count=len(subscribers))
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     email = request.form.get("email", "").strip().lower()
+    honeypot = request.form.get("website", "")  # ✅ Champ invisible
+
+    # 🔒 Protection honeypot (si rempli → bot détecté)
+    if honeypot != "":
+        return "Suspicious activity detected", 400
+
+    # 🔒 Protection temps (bloque si soumis trop vite)
+    start_time = session.get("form_start_time", 0)
+    if time.time() - start_time < 2:  # Moins de 2 secondes → suspect
+        return "Formulaire soumis trop rapidement", 400
 
     # ✅ Validation stricte de l'email
     try:
@@ -128,13 +145,7 @@ def admin_login():
         else:
             flash("Mot de passe incorrect ❌", "danger")
             return redirect(url_for("admin_login"))
-    return """
-        <h1>Connexion admin</h1>
-        <form method="post">
-            <input type="password" name="password" placeholder="Mot de passe admin" required>
-            <button type="submit">Connexion</button>
-        </form>
-    """
+    return render_template("admin_login.html")  # ✅ On déplace le formulaire dans un template sécurisé
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
