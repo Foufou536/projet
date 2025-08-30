@@ -132,40 +132,39 @@ def newsletter_test():
     return app.send_static_file("newsletter_draft.html")
 
 # ==========================
-# 🔑 Interface Admin sécurisée
+# 🔑 Interface Admin sécurisée avec anti-brute force
 # ==========================
+
+# Dictionnaire pour stocker les tentatives par IP
+login_attempts = {}
+
 @app.route("/admin", methods=["GET", "POST"])
 def admin_login():
+    user_ip = request.remote_addr  # 📌 On récupère l’IP du visiteur
+    now = datetime.now()
+
+    # Nettoyage des vieilles tentatives (plus de 10 min)
+    if user_ip in login_attempts:
+        login_attempts[user_ip] = [
+            t for t in login_attempts[user_ip] if now - t < timedelta(minutes=10)
+        ]
+
     if request.method == "POST":
         password = request.form.get("password")
+
+        # Si l’IP a trop de tentatives ratées (≥ 5 en 10 min) → blocage
+        if user_ip in login_attempts and len(login_attempts[user_ip]) >= 5:
+            flash("⛔ Trop de tentatives. Réessayez dans 10 minutes.", "danger")
+            return redirect(url_for("admin_login"))
+
         if password == ADMIN_PASSWORD:
             session["admin"] = True
             flash("Connexion réussie ✅", "success")
             return redirect(url_for("admin_dashboard"))
         else:
+            # Ajout d’une tentative échouée
+            login_attempts.setdefault(user_ip, []).append(now)
             flash("Mot de passe incorrect ❌", "danger")
             return redirect(url_for("admin_login"))
-    return render_template("admin_login.html")  # ✅ On déplace le formulaire dans un template sécurisé
 
-@app.route("/admin/dashboard")
-def admin_dashboard():
-    if not session.get("admin"):
-        return redirect(url_for("admin_login"))
-    subscribers = load_subscribers()
-    return """
-        <h1>Gestion des abonnés</h1>
-        <ul>
-        """ + "".join(
-            f"<li>{email} <a href='/admin/delete/{email}'>❌ Supprimer</a></li>"
-            for email in subscribers
-        ) + "</ul>"
-
-@app.route("/admin/delete/<email>")
-def admin_delete(email):
-    if not session.get("admin"):
-        return redirect(url_for("admin_login"))
-    subscribers = load_subscribers()
-    if email in subscribers:
-        subscribers.remove(email)
-        save_subscribers(subscribers)
-    return redirect(url_for("admin_dashboard"))
+    return render_template("admin_login.html")  # Formulaire sécurisé
