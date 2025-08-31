@@ -1,27 +1,25 @@
 import os
 import json
+import time
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
-from flask_wtf.csrf import CSRFProtect, generate_csrf  # ✅ Ajout pour la sécurité
-import time
+from flask_wtf.csrf import CSRFProtect, generate_csrf  
 
 # ==========================
 # 🔐 Chargement variables d'environnement
 # ==========================
-load_dotenv()  # permet de lire le fichier .env en local
+load_dotenv()
 
 app = Flask(__name__)
 
-# 🔑 Lecture des secrets depuis variables d'environnement
 ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "motdepasse_par_defaut")
 app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut")
 
-# ✅ Activation protection CSRF
+# ✅ CSRF
 csrf = CSRFProtect(app)
 
-# ✅ Injection du token CSRF dans tous les templates
 @app.context_processor
 def inject_csrf_token():
     return dict(csrf_token=generate_csrf)
@@ -74,25 +72,21 @@ def save_subscribers(subscribers):
 @app.route("/")
 def index():
     subscribers = load_subscribers()
-    # ✅ Stocke le moment où la page a été chargée pour détecter les soumissions trop rapides
     session["form_start_time"] = time.time()
     return render_template("index.html", subscriber_count=len(subscribers))
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
     email = request.form.get("email", "").strip().lower()
-    honeypot = request.form.get("website", "")  # ✅ Champ invisible
+    honeypot = request.form.get("website", "")
 
-    # 🔒 Protection honeypot (si rempli → bot détecté)
     if honeypot != "":
         return "Suspicious activity detected", 400
 
-    # 🔒 Protection temps (bloque si soumis trop vite)
     start_time = session.get("form_start_time", 0)
-    if time.time() - start_time < 2:  # Moins de 2 secondes → suspect
+    if time.time() - start_time < 2:
         return "Formulaire soumis trop rapidement", 400
 
-    # ✅ Validation stricte de l'email
     try:
         valid = validate_email(email)
         email = valid.email
@@ -139,16 +133,14 @@ def newsletter_test():
 # ==========================
 # 🔑 Interface Admin sécurisée avec anti-brute force
 # ==========================
-
-# Dictionnaire pour stocker les tentatives par IP
 login_attempts = {}
 
-@app.route("/admin", methods=["GET", "POST"])
+@app.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
-    user_ip = request.remote_addr  # 📌 On récupère l’IP du visiteur
+    user_ip = request.remote_addr
     now = datetime.now()
 
-    # Nettoyage des vieilles tentatives (plus de 10 min)
+    # Nettoyage des vieilles tentatives (10 min)
     if user_ip in login_attempts:
         login_attempts[user_ip] = [
             t for t in login_attempts[user_ip] if now - t < timedelta(minutes=10)
@@ -157,7 +149,6 @@ def admin_login():
     if request.method == "POST":
         password = request.form.get("password")
 
-        # Si l’IP a trop de tentatives ratées (≥ 5 en 10 min) → blocage
         if user_ip in login_attempts and len(login_attempts[user_ip]) >= 5:
             flash("⛔ Trop de tentatives. Réessayez dans 10 minutes.", "danger")
             return redirect(url_for("admin_login"))
@@ -167,15 +158,14 @@ def admin_login():
             flash("Connexion réussie ✅", "success")
             return redirect(url_for("admin_dashboard"))
         else:
-            # Ajout d’une tentative échouée
             login_attempts.setdefault(user_ip, []).append(now)
             flash("Mot de passe incorrect ❌", "danger")
             return redirect(url_for("admin_login"))
 
-    return render_template("admin_login.html")  # Formulaire sécurisé
+    return render_template("admin_login.html")
 
 # ==========================
-# 🛠️ Page Admin Dashboard (corrige l'erreur)
+# 🛠️ Admin Dashboard
 # ==========================
 @app.route("/admin/dashboard")
 def admin_dashboard():

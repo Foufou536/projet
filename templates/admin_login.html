@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Connexion Admin</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7f7f7; padding: 40px; }
+    .login-box {
+      max-width: 350px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 14px;
+    }
+    button {
+      background: #007bff; color: white; border: none;
+      cursor: pointer; border-radius: 5px;
+    }
+    button:hover { background: #0056b3; }
+    .error { color: red; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Connexion Admin</h2>
+    {% if error %}<p class="error">{{ error }}</p>{% endif %}
+    <form method="post" action="/admin_login">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label for="username">Utilisateur :</label>
+      <input type="text" id="username" name="username" required>
+      <label for="password">Mot de passe :</label>
+      <input type="password" id="password" name="password" required>
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+</body>
+</html>
