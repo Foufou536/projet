@@ -74,36 +74,37 @@
       📩 Abonne-toi pour profiter de bons plans en avant-première !
     </p>
 
-    <!-- Formulaire d’inscription sécurisé -->
-    <form id="signup" class="newsletter-signup" action="/subscribe" method="post" novalidate>
-      <!-- CSRF si dispo côté serveur (ne casse rien si absent) -->
-      {% if csrf_token %}<input type="hidden" name="csrf_token" value="{{ csrf_token }}">{% endif %}
+    <!-- Formulaire d’inscription sécurisé --> 
+<form id="signup" class="newsletter-signup" action="/subscribe" method="post" novalidate>
+  <!-- ✅ CSRF obligatoire -->
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-      <!-- Timestamp anti-bot/submit ultra rapide -->
-      <input type="hidden" name="ts" value="{{ (datetime.utcnow().timestamp() | int) if datetime else '' }}">
+  <!-- Timestamp anti-bot -->
+  <input type="hidden" name="ts" value="{{ (datetime.utcnow().timestamp() | int) if datetime else '' }}">
 
-      <!-- Champ honeypot anti-bot (à vérifier côté serveur) -->
-      <div class="hp-wrap" aria-hidden="true">
-        <label for="website">Ne pas remplir ce champ</label>
-        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
-      </div>
+  <!-- Champ honeypot anti-bot -->
+  <div class="hp-wrap" aria-hidden="true">
+    <label for="website">Ne pas remplir ce champ</label>
+    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+  </div>
 
-      <input
-        type="email"
-        name="email"
-        inputmode="email"
-        autocomplete="email"
-        placeholder="Entrez votre email"
-        aria-label="Adresse e-mail"
-        required
-        minlength="6"
-        maxlength="254"
-        pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
-      >
-      <button type="submit" id="submitBtn">S'inscrire</button>
-    </form>
+  <input
+    type="email"
+    name="email"
+    inputmode="email"
+    autocomplete="email"
+    placeholder="Entrez votre email"
+    aria-label="Adresse e-mail"
+    required
+    minlength="6"
+    maxlength="254"
+    pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+  >
+  <button type="submit" id="submitBtn">S'inscrire</button>
+</form>
 
-    <p class="subscriber-count">📬 <strong>{{ subscriber_count }}</strong> personnes sont déjà inscrites !</p>
+<p class="subscriber-count">📬 <strong>{{ subscriber_count }}</strong> personnes sont déjà inscrites !</p>
+
 
     <!-- Image principale -->
     <img src="/static/banner.jpg" alt="Photo de la ville" class="banner" loading="lazy" width="800" height="420">
