@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
-from flask_wtf.csrf import CSRFProtect  # ✅ Ajout pour la sécurité
+from flask_wtf.csrf import CSRFProtect, generate_csrf  # ✅ Ajout pour la sécurité
 import time
 
 # ==========================
@@ -20,6 +20,11 @@ app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut")
 
 # ✅ Activation protection CSRF
 csrf = CSRFProtect(app)
+
+# ✅ Injection du token CSRF dans tous les templates
+@app.context_processor
+def inject_csrf_token():
+    return dict(csrf_token=generate_csrf)
 
 # ==========================
 # 📁 Fichiers utilisés
@@ -168,3 +173,14 @@ def admin_login():
             return redirect(url_for("admin_login"))
 
     return render_template("admin_login.html")  # Formulaire sécurisé
+
+# ==========================
+# 🛠️ Page Admin Dashboard (corrige l'erreur)
+# ==========================
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    if not session.get("admin"):
+        flash("Accès refusé 🚫", "danger")
+        return redirect(url_for("admin_login"))
+    subscribers = load_subscribers()
+    return render_template("admin_dashboard.html", subscriber_count=len(subscribers))
