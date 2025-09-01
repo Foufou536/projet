@@ -167,7 +167,6 @@ def admin_login():
 
     return render_template("admin_login.html")
 
-
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if not session.get("admin"):
@@ -185,7 +184,6 @@ def admin_dashboard():
     subscribers = load_subscribers()
     return render_template("admin_dashboard.html", subscribers=subscribers)
 
-
 @app.route("/admin/delete/<email>", methods=["POST"])
 def delete_subscriber(email):
     if not session.get("admin"):
@@ -202,21 +200,8 @@ def delete_subscriber(email):
 
     return redirect(url_for("admin_dashboard"))
 
-
 @app.route("/admin/logout")
 def admin_logout():
     session.clear()
     flash("Déconnexion réussie 👋", "success")
     return redirect(url_for("admin_login"))
-
-
-# ==========================
-# 🛠️ Admin Dashboard
-# ==========================
-@app.route("/admin/dashboard")
-def admin_dashboard():
-    if not session.get("admin"):
-        flash("Accès refusé 🚫", "danger")
-        return redirect(url_for("admin_login"))
-    subscribers = load_subscribers()
-    return render_template("admin_dashboard.html", subscriber_count=len(subscribers))
