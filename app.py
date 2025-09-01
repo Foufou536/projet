@@ -131,16 +131,18 @@ def newsletter_test():
     return app.send_static_file("newsletter_draft.html")
 
 # ==========================
-# 🔑 Interface Admin sécurisée avec anti-brute force
+# 🔑 Interface Admin
 # ==========================
+
+# Dictionnaire pour stocker les tentatives par IP
 login_attempts = {}
 
-@app.route("/admin_login", methods=["GET", "POST"])
+@app.route("/admin", methods=["GET", "POST"])
 def admin_login():
     user_ip = request.remote_addr
     now = datetime.now()
 
-    # Nettoyage des vieilles tentatives (10 min)
+    # Nettoyage des vieilles tentatives (plus de 10 min)
     if user_ip in login_attempts:
         login_attempts[user_ip] = [
             t for t in login_attempts[user_ip] if now - t < timedelta(minutes=10)
@@ -155,6 +157,7 @@ def admin_login():
 
         if password == ADMIN_PASSWORD:
             session["admin"] = True
+            session["last_active"] = time.time()  # ⏳ Sauvegarde du moment de connexion
             flash("Connexion réussie ✅", "success")
             return redirect(url_for("admin_dashboard"))
         else:
@@ -163,6 +166,49 @@ def admin_login():
             return redirect(url_for("admin_login"))
 
     return render_template("admin_login.html")
+
+
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    if not session.get("admin"):
+        flash("Accès refusé 🚫", "danger")
+        return redirect(url_for("admin_login"))
+
+    # ⏳ Timeout auto : 10 minutes d'inactivité
+    if time.time() - session.get("last_active", 0) > 600:
+        session.clear()
+        flash("Session expirée ⏳", "warning")
+        return redirect(url_for("admin_login"))
+
+    session["last_active"] = time.time()  # 🔄 Refresh activité
+
+    subscribers = load_subscribers()
+    return render_template("admin_dashboard.html", subscribers=subscribers)
+
+
+@app.route("/admin/delete/<email>", methods=["POST"])
+def delete_subscriber(email):
+    if not session.get("admin"):
+        flash("Accès refusé 🚫", "danger")
+        return redirect(url_for("admin_login"))
+
+    subscribers = load_subscribers()
+    if email in subscribers:
+        subscribers.remove(email)
+        save_subscribers(subscribers)
+        flash(f"✅ {email} a été supprimé", "success")
+    else:
+        flash("⚠️ Abonné introuvable", "warning")
+
+    return redirect(url_for("admin_dashboard"))
+
+
+@app.route("/admin/logout")
+def admin_logout():
+    session.clear()
+    flash("Déconnexion réussie 👋", "success")
+    return redirect(url_for("admin_login"))
+
 
 # ==========================
 # 🛠️ Admin Dashboard

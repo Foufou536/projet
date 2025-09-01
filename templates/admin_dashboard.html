@@ -5,8 +5,20 @@
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <h1>Bienvenue dans l’interface admin ✅</h1>
-    <p>Nombre d’abonnés : {{ subscriber_count }}</p>
-    <a href="{{ url_for('index') }}">Retour au site</a>
+    <h1>Dashboard Admin</h1>
+
+<a href="{{ url_for('admin_logout') }}">🚪 Déconnexion</a>
+
+<h2>Liste des abonnés ({{ subscribers|length }})</h2>
+<ul>
+  {% for email in subscribers %}
+    <li>
+      {{ email }}
+      <form action="{{ url_for('delete_subscriber', email=email) }}" method="POST" style="display:inline;">
+        <button type="submit">❌ Supprimer</button>
+      </form>
+    </li>
+  {% endfor %}
+</ul>
 </body>
 </html>
