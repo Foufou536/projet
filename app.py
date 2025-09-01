@@ -7,6 +7,8 @@ from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, generate_csrf  
 
+csrf = CSRFProtect(app)  # protège toutes les routes POST
+
 # ==========================
 # 🔐 Chargement variables d'environnement
 # ==========================

@@ -7,18 +7,19 @@
 <body>
     <h1>Dashboard Admin</h1>
 
-<a href="{{ url_for('admin_logout') }}">🚪 Déconnexion</a>
+    <a href="{{ url_for('admin_logout') }}">🚪 Déconnexion</a>
 
-<h2>Liste des abonnés ({{ subscribers|length }})</h2>
-<ul>
-  {% for email in subscribers %}
-    <li>
-      {{ email }}
-      <form action="{{ url_for('delete_subscriber', email=email) }}" method="POST" style="display:inline;">
-        <button type="submit">❌ Supprimer</button>
-      </form>
-    </li>
-  {% endfor %}
-</ul>
+    <h2>Liste des abonnés ({{ subscribers|length }})</h2>
+    <ul>
+      {% for email in subscribers %}
+        <li>
+          {{ email }}
+          <form action="{{ url_for('delete_subscriber', email=email) }}" method="POST" style="display:inline;">
+            {{ csrf_token() }}
+            <button type="submit">❌ Supprimer</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
 </body>
 </html>
