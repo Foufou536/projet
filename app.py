@@ -137,7 +137,7 @@ def newsletter_test():
 # Dictionnaire pour stocker les tentatives par IP
 login_attempts = {}
 
-@app.route("/admin", methods=["GET", "POST"])
+@app.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
     user_ip = request.remote_addr
     now = datetime.now()
