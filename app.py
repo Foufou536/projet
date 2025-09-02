@@ -5,7 +5,9 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
-from flask_wtf.csrf import CSRFProtect, generate_csrf  
+from flask_wtf.csrf import CSRFProtect, generate_csrf
+import psycopg2
+from psycopg2.extras import RealDictCursor
 
 # ==========================
 # 🔐 Chargement variables d'environnement
@@ -20,19 +22,40 @@ app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut")
 # Activer la protection CSRF
 csrf = CSRFProtect(app)
 
-# ✅ CSRF
-csrf = CSRFProtect(app)
-
 @app.context_processor
 def inject_csrf_token():
     return dict(csrf_token=generate_csrf)
 
 # ==========================
-# 📁 Fichiers utilisés
+# 📁 Fichiers utilisés (pour les stats seulement)
 # ==========================
-SUBSCRIBERS_FILE = 'subscribers.json'
 STATS_FILE = 'stats.json'
 META_FILE = 'newsletter_meta.json'
+
+# ==========================
+# 🗄️ Connexion PostgreSQL
+# ==========================
+DATABASE_URL = os.getenv("DATABASE_URL")  # ⚠️ doit être configuré sur Render et en local dans .env
+
+def get_db_connection():
+    return psycopg2.connect(DATABASE_URL, sslmode="require", cursor_factory=RealDictCursor)
+
+# Création de la table si elle n’existe pas
+def init_db():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS subscribers (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            subscribed_at TIMESTAMP DEFAULT NOW()
+        )
+    """)
+    conn.commit()
+    cur.close()
+    conn.close()
+
+init_db()
 
 # ==========================
 # 📩 Newsletter
@@ -54,20 +77,36 @@ def load_newsletter_content():
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
 # ==========================
-# 👥 Gestion abonnés
+# 👥 Gestion abonnés via PostgreSQL
 # ==========================
 def load_subscribers():
-    if not os.path.exists(SUBSCRIBERS_FILE):
-        return []
-    with open(SUBSCRIBERS_FILE, "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return []
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT email FROM subscribers ORDER BY subscribed_at DESC")
+    subscribers = [row["email"] for row in cur.fetchall()]
+    cur.close()
+    conn.close()
+    return subscribers
 
-def save_subscribers(subscribers):
-    with open(SUBSCRIBERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(subscribers, f, indent=2)
+def save_subscriber(email):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    try:
+        cur.execute("INSERT INTO subscribers (email) VALUES (%s) ON CONFLICT DO NOTHING", (email,))
+        conn.commit()
+    except Exception as e:
+        print(f"Erreur insertion subscriber: {e}")
+    finally:
+        cur.close()
+        conn.close()
+
+def delete_subscriber_db(email):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM subscribers WHERE email = %s", (email,))
+    conn.commit()
+    cur.close()
+    conn.close()
 
 # ==========================
 # 🌍 Routes publiques
@@ -100,8 +139,8 @@ def subscribe():
     if email in subscribers:
         return render_template("already_subscribed.html", subscriber_count=len(subscribers))
     else:
-        subscribers.append(email)
-        save_subscribers(subscribers)
+        save_subscriber(email)
+        subscribers.append(email)  # pour l’affichage après ajout
         return render_template("success.html", subscriber_count=len(subscribers))
 
 @app.route("/newsletter")
@@ -136,8 +175,6 @@ def newsletter_test():
 # ==========================
 # 🔑 Interface Admin
 # ==========================
-
-# Dictionnaire pour stocker les tentatives par IP
 login_attempts = {}
 
 @app.route("/admin_login", methods=["GET", "POST"])
@@ -145,7 +182,6 @@ def admin_login():
     user_ip = request.remote_addr
     now = datetime.now()
 
-    # Nettoyage des vieilles tentatives (plus de 10 min)
     if user_ip in login_attempts:
         login_attempts[user_ip] = [
             t for t in login_attempts[user_ip] if now - t < timedelta(minutes=10)
@@ -160,7 +196,7 @@ def admin_login():
 
         if password == ADMIN_PASSWORD:
             session["admin"] = True
-            session["last_active"] = time.time()  # ⏳ Sauvegarde du moment de connexion
+            session["last_active"] = time.time()
             flash("Connexion réussie ✅", "success")
             return redirect(url_for("admin_dashboard"))
         else:
@@ -176,13 +212,12 @@ def admin_dashboard():
         flash("Accès refusé 🚫", "danger")
         return redirect(url_for("admin_login"))
 
-    # ⏳ Timeout auto : 10 minutes d'inactivité
     if time.time() - session.get("last_active", 0) > 600:
         session.clear()
         flash("Session expirée ⏳", "warning")
         return redirect(url_for("admin_login"))
 
-    session["last_active"] = time.time()  # 🔄 Refresh activité
+    session["last_active"] = time.time()
 
     subscribers = load_subscribers()
     return render_template("admin_dashboard.html", subscribers=subscribers)
@@ -193,14 +228,8 @@ def delete_subscriber(email):
         flash("Accès refusé 🚫", "danger")
         return redirect(url_for("admin_login"))
 
-    subscribers = load_subscribers()
-    if email in subscribers:
-        subscribers.remove(email)
-        save_subscribers(subscribers)
-        flash(f"✅ {email} a été supprimé", "success")
-    else:
-        flash("⚠️ Abonné introuvable", "warning")
-
+    delete_subscriber_db(email)
+    flash(f"✅ {email} a été supprimé", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/logout")
