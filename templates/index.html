@@ -1,9 +1,13 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Newsletter Locale</title>
+
+  <!-- Google AdSense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXX"
+     crossorigin="anonymous"></script>
 
   <!-- Empêche l’onglet ouvert via target=_blank d’accéder à window.opener -->
   <meta name="referrer" content="no-referrer-when-downgrade" />
@@ -52,6 +56,19 @@
 
     /* masquage accessible pour le champ piège */
     .hp-wrap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+
+    /* ✅ Style du bandeau pub */
+    .ads-left {
+      position: fixed;
+      top: 120px; /* sous le header */
+      left: 0;
+      width: 160px;
+      z-index: 999;
+    }
+    .ads-left ins {
+      width: 160px !important;
+      height: 600px !important;
+    }
   </style>
 </head>
 <body>
@@ -67,6 +84,19 @@
          target="_blank" rel="noopener noreferrer">Proposer</a>
     </nav>
   </header>
+
+  <!-- ✅ Bandeau pub gauche -->
+  <aside class="ads-left">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-XXXXXXXXXXXX"
+         data-ad-slot="1234567890"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </aside>
 
   <div class="hero">
     <h2>La newsletter locale qui soutient vos commerçants et PME</h2>
