@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Espace - Newsletter Locale</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background-color: #fff3ed;
+            color: #333;
+        }
+        
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            background-color: #fff3ed;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #111;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        
+        .status-pending {
+            border-left: 4px solid #ffc107;
+        }
+        
+        .status-approved {
+            border-left: 4px solid #28a745;
+        }
+        
+        .status-rejected {
+            border-left: 4px solid #dc3545;
+        }
+        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .submissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .submissions-table th,
+        .submissions-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .submissions-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Newsletter Locale</h1>
+        <nav>
+            <a href="/">Accueil</a>
+            <a href="/dashboard">Mon Espace</a>
+            <a href="/logout">Déconnexion</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Bonjour {{ user.company_name }}</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Statut du compte -->
+        <div class="status-card {% if user.status == 'pending' %}status-pending{% elif user.status == 'approved' %}status-approved{% else %}status-rejected{% endif %}">
+            <h3>Statut de votre compte</h3>
+            {% if user.status == 'pending' %}
+                <p><strong>En attente d'approbation</strong></p>
+                <p>Votre compte est en cours d'examen. Vous pourrez soumettre des contenus une fois votre compte approuvé.</p>
+            {% elif user.status == 'approved' %}
+                <p><strong>Compte approuvé ✅</strong></p>
+                <p>Félicitations ! Vous pouvez maintenant soumettre vos contenus pour la newsletter.</p>
+                <a href="/submit" class="btn">Créer une soumission</a>
+            {% else %}
+                <p><strong>Compte rejeté</strong></p>
+                <p>Votre demande n'a pas été acceptée. Contactez-nous si vous pensez qu'il s'agit d'une erreur.</p>
+            {% endif %}
+        </div>
+
+        <!-- Informations du compte -->
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); margin-bottom: 30px;">
+            <h3>Informations du compte</h3>
+            <p><strong>Email :</strong> {{ user.email }}</p>
+            <p><strong>Entreprise :</strong> {{ user.company_name }}</p>
+            {% if user.phone %}
+                <p><strong>Téléphone :</strong> {{ user.phone }}</p>
+            {% endif %}
+            <p><strong>Inscrit le :</strong> {{ user.created_at.strftime('%d/%m/%Y') }}</p>
+        </div>
+
+        <!-- Mes soumissions -->
+        <div style="background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
+            <h3>Mes soumissions ({{ submissions|length }})</h3>
+            
+            {% if submissions %}
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th>Titre</th>
+                            <th>Catégorie</th>
+                            <th>Statut</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in submissions %}
+                            <tr>
+                                <td>{{ submission.title }}</td>
+                                <td>{{ submission.category|title }}</td>
+                                <td>
+                                    <span class="badge badge-{{ submission.status }}">
+                                        {% if submission.status == 'pending' %}En attente
+                                        {% elif submission.status == 'approved' %}Approuvé
+                                        {% elif submission.status == 'rejected' %}Rejeté
+                                        {% elif submission.status == 'published' %}Publié
+                                        {% else %}{{ submission.status|title }}{% endif %}
+                                    </span>
+                                </td>
+                                <td>{{ submission.created_at.strftime('%d/%m/%Y') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Aucune soumission pour le moment.</p>
+                {% if user.status == 'approved' %}
+                    <a href="/submit" class="btn">Créer votre première soumission</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer une soumission - Newsletter Locale</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background-color: #fff3ed;
+            color: #333;
+        }
+        
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            background-color: #fff3ed;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #111;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        input[type="text"], input[type="url"], textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .alert-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .required {
+            color: red;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .preview-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Newsletter Locale</h1>
+        <nav>
+            <a href="/dashboard">Mon Espace</a>
+            <a href="/logout">Déconnexion</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2>Créer une nouvelle soumission</h2>
+        <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" id="submissionForm">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            
+            <div class="form-group">
+                <label for="title">Titre de votre annonce <span class="required">*</span></label>
+                <input type="text" id="title" name="title" required maxlength="100">
+                <div class="help-text">Maximum 100 caractères. Soyez accrocheur !</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description <span class="required">*</span></label>
+                <textarea id="description" name="description" required maxlength="500" placeholder="Décrivez votre offre, événement ou nouveauté..."></textarea>
+                <div class="help-text">Maximum 500 caractères. Donnez envie aux lecteurs !</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="image_url">URL de votre image</label>
+                <input type="url" id="image_url" name="image_url" placeholder="https://exemple.com/mon-image.jpg">
+                <div class="help-text">Lien vers une image qui illustre votre annonce (optionnel)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="link_url">Lien vers votre site/page</label>
+                <input type="url" id="link_url" name="link_url" placeholder="https://mon-site.com">
+                <div class="help-text">Où diriger les lecteurs intéressés ? (optionnel)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="category">Catégorie</label>
+                <select id="category" name="category">
+                    <option value="general">Général</option>
+                    <option value="promotion">Promotion/Soldes</option>
+                    <option value="evenement">Événement</option>
+                    <option value="nouveaute">Nouveauté</option>
+                    <option value="service">Service</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn">Soumettre</button>
+                <button type="button" class="btn btn-secondary" onclick="previewSubmission()">Prévisualiser</button>
+                <a href="/dashboard" class="btn btn-secondary">Annuler</a>
+            </div>
+        </form>
+
+        <div id="preview" class="preview-section" style="display: none;">
+            <h3>Aperçu de votre soumission</h3>
+            <div id="previewContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function previewSubmission() {
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const imageUrl = document.getElementById('image_url').value;
+            const linkUrl = document.getElementById('link_url').value;
+            const category = document.getElementById('category').value;
+
+            if (!title || !description) {
+                alert('Veuillez remplir au moins le titre et la description pour la prévisualisation.');
+                return;
+            }
+
+            let previewHtml = `
+                <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: white;">
+                    <span style="color: #007bff; font-weight: bold; font-size: 12px;">${category.toUpperCase()}</span>
+                    <h4 style="margin: 5px 0 10px; color: #333;">${title}</h4>
+                    <p style="margin: 0 0 10px; color: #666;">${description}</p>
+            `;
+
+            if (imageUrl) {
+                previewHtml += `<img src="${imageUrl}" style="max-width: 150px; border-radius: 4px; margin: 10px 0;" onerror="this.style.display='none'">`;
+            }
+
+            if (linkUrl) {
+                previewHtml += `<br><a href="${linkUrl}" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">En savoir plus</a>`;
+            }
+
+            previewHtml += `</div>`;
+
+            document.getElementById('previewContent').innerHTML = previewHtml;
+            document.getElementById('preview').style.display = 'block';
+            document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Compteur de caractères
+        document.getElementById('title').addEventListener('input', function() {
+            const maxLength = this.maxLength;
+            const currentLength = this.value.length;
+            const helpText = this.parentNode.querySelector('.help-text');
+            helpText.textContent = `${currentLength}/${maxLength} caractères. Soyez accrocheur !`;
+        });
+
+        document.getElementById('description').addEventListener('input', function() {
+            const maxLength = this.maxLength;
+            const currentLength = this.value.length;
+            const helpText = this.parentNode.querySelector('.help-text');
+            helpText.textContent = `${currentLength}/${maxLength} caractères. Donnez envie aux lecteurs !`;
+        });

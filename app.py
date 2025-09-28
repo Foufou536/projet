@@ -1,13 +1,16 @@
 import os
 import json
 import time
-from datetime import datetime, timedelta
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from datetime import datetime, timedelta, date
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from email_validator import validate_email, EmailNotValidError
 from dotenv import load_dotenv
 from flask_wtf.csrf import CSRFProtect, generate_csrf
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
+import re
 
 # ==========================
 # 🔐 Chargement variables d'environnement
@@ -35,15 +38,17 @@ META_FILE = 'newsletter_meta.json'
 # ==========================
 # 🗄️ Connexion PostgreSQL
 # ==========================
-DATABASE_URL = os.getenv("DATABASE_URL")  # ⚠️ doit être configuré sur Render et en local dans .env
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode="require", cursor_factory=RealDictCursor)
 
-# Création de la table si elle n’existe pas
+# Création des tables
 def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
+    
+    # Table des abonnés (existe déjà)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS subscribers (
             id SERIAL PRIMARY KEY,
@@ -51,6 +56,38 @@ def init_db():
             subscribed_at TIMESTAMP DEFAULT NOW()
         )
     """)
+    
+    # Table des utilisateurs contributeurs
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id SERIAL PRIMARY KEY,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            company_name TEXT NOT NULL,
+            phone TEXT,
+            status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+            created_at TIMESTAMP DEFAULT NOW(),
+            approved_at TIMESTAMP
+        )
+    """)
+    
+    # Table des soumissions de newsletter
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS submissions (
+            id SERIAL PRIMARY KEY,
+            user_id INTEGER REFERENCES users(id),
+            title TEXT NOT NULL,
+            description TEXT NOT NULL,
+            image_url TEXT,
+            link_url TEXT,
+            category TEXT DEFAULT 'general',
+            status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'scheduled', 'published')),
+            created_at TIMESTAMP DEFAULT NOW(),
+            scheduled_for DATE,
+            published_at TIMESTAMP
+        )
+    """)
+    
     conn.commit()
     cur.close()
     conn.close()
@@ -58,7 +95,38 @@ def init_db():
 init_db()
 
 # ==========================
-# 📩 Newsletter
+# 🛡️ Décorateurs d'authentification
+# ==========================
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            flash("Vous devez être connecté pour accéder à cette page.", "warning")
+            return redirect(url_for('user_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def approved_user_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user_id' not in session:
+            return redirect(url_for('user_login'))
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT status FROM users WHERE id = %s", (session['user_id'],))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if not user or user['status'] != 'approved':
+            flash("Votre compte doit être approuvé pour accéder à cette fonctionnalité.", "warning")
+            return redirect(url_for('user_dashboard'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# ==========================
+# 📩 Newsletter (fonctions existantes)
 # ==========================
 def load_newsletter_content():
     use_new = False
@@ -77,7 +145,7 @@ def load_newsletter_content():
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
 # ==========================
-# 👥 Gestion abonnés via PostgreSQL
+# 👥 Gestion abonnés via PostgreSQL (fonctions existantes)
 # ==========================
 def load_subscribers():
     conn = get_db_connection()
@@ -109,7 +177,7 @@ def delete_subscriber_db(email):
     conn.close()
 
 # ==========================
-# 🌍 Routes publiques
+# 🌍 Routes publiques (existantes)
 # ==========================
 @app.route("/")
 def index():
@@ -140,7 +208,7 @@ def subscribe():
         return render_template("already_subscribed.html", subscriber_count=len(subscribers))
     else:
         save_subscriber(email)
-        subscribers.append(email)  # pour l’affichage après ajout
+        subscribers.append(email)
         return render_template("success.html", subscriber_count=len(subscribers))
 
 @app.route("/newsletter")
@@ -171,13 +239,176 @@ def commercant():
 @app.route("/newsletter-test")
 def newsletter_test():
     return app.send_static_file("newsletter_draft.html")
-    
+
 @app.route('/ads.txt')
 def ads_txt():
     return app.send_static_file('ads.txt'), 200, {'Content-Type': 'text/plain'}
 
 # ==========================
-# 🔑 Interface Admin
+# 🔐 Authentification utilisateurs (NOUVEAU)
+# ==========================
+@app.route("/register", methods=["GET", "POST"])
+def user_register():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+        company_name = request.form.get("company_name", "").strip()
+        phone = request.form.get("phone", "").strip()
+        
+        # Validation
+        if not email or not password or not company_name:
+            flash("Tous les champs obligatoires doivent être remplis.", "error")
+            return render_template("auth/register.html")
+        
+        if len(password) < 6:
+            flash("Le mot de passe doit contenir au moins 6 caractères.", "error")
+            return render_template("auth/register.html")
+        
+        try:
+            validate_email(email)
+        except EmailNotValidError:
+            flash("Adresse email invalide.", "error")
+            return render_template("auth/register.html")
+        
+        # Vérifier si l'utilisateur existe déjà
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id FROM users WHERE email = %s", (email,))
+        if cur.fetchone():
+            flash("Un compte existe déjà avec cette adresse email.", "error")
+            cur.close()
+            conn.close()
+            return render_template("auth/register.html")
+        
+        # Créer l'utilisateur
+        password_hash = generate_password_hash(password)
+        cur.execute("""
+            INSERT INTO users (email, password_hash, company_name, phone)
+            VALUES (%s, %s, %s, %s)
+        """, (email, password_hash, company_name, phone))
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        flash("Inscription réussie ! Votre compte sera examiné sous peu.", "success")
+        return redirect(url_for('user_login'))
+    
+    return render_template("auth/register.html")
+
+@app.route("/login", methods=["GET", "POST"])
+def user_login():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+        
+        if not email or not password:
+            flash("Email et mot de passe requis.", "error")
+            return render_template("auth/login.html")
+        
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT id, password_hash, status FROM users WHERE email = %s", (email,))
+        user = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if user and check_password_hash(user['password_hash'], password):
+            session['user_id'] = user['id']
+            session['user_email'] = email
+            flash("Connexion réussie !", "success")
+            return redirect(url_for('user_dashboard'))
+        else:
+            flash("Email ou mot de passe incorrect.", "error")
+    
+    return render_template("auth/login.html")
+
+@app.route("/logout")
+def user_logout():
+    session.pop('user_id', None)
+    session.pop('user_email', None)
+    flash("Déconnexion réussie.", "info")
+    return redirect(url_for('index'))
+
+@app.route("/dashboard")
+@login_required
+def user_dashboard():
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Informations utilisateur
+    cur.execute("SELECT * FROM users WHERE id = %s", (session['user_id'],))
+    user = cur.fetchone()
+    
+    # Soumissions de l'utilisateur
+    cur.execute("""
+        SELECT * FROM submissions 
+        WHERE user_id = %s 
+        ORDER BY created_at DESC
+    """, (session['user_id'],))
+    submissions = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return render_template("auth/dashboard.html", user=user, submissions=submissions)
+
+# ==========================
+# 📝 Système de soumissions (NOUVEAU)
+# ==========================
+@app.route("/submit", methods=["GET", "POST"])
+@approved_user_required
+def submit_newsletter():
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        image_url = request.form.get("image_url", "").strip()
+        link_url = request.form.get("link_url", "").strip()
+        category = request.form.get("category", "general")
+        
+        if not title or not description:
+            flash("Titre et description sont obligatoires.", "error")
+            return render_template("submission/create.html")
+        
+        # Validation URL basique
+        url_pattern = re.compile(r'^https?://')
+        if image_url and not url_pattern.match(image_url):
+            flash("L'URL de l'image doit commencer par http:// ou https://", "error")
+            return render_template("submission/create.html")
+        
+        if link_url and not url_pattern.match(link_url):
+            flash("L'URL du lien doit commencer par http:// ou https://", "error")
+            return render_template("submission/create.html")
+        
+        # Sauvegarder la soumission
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO submissions (user_id, title, description, image_url, link_url, category)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, (session['user_id'], title, description, image_url, link_url, category))
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        flash("Votre soumission a été envoyée ! Elle sera examinée prochainement.", "success")
+        return redirect(url_for('user_dashboard'))
+    
+    return render_template("submission/create.html")
+
+@app.route("/preview", methods=["POST"])
+@approved_user_required
+def preview_submission():
+    data = {
+        'title': request.form.get("title", ""),
+        'description': request.form.get("description", ""),
+        'image_url': request.form.get("image_url", ""),
+        'link_url': request.form.get("link_url", ""),
+        'category': request.form.get("category", "general")
+    }
+    return render_template("submission/preview.html", data=data)
+
+# ==========================
+# 🔑 Interface Admin (existante + nouvelles fonctionnalités)
 # ==========================
 login_attempts = {}
 
@@ -223,8 +454,96 @@ def admin_dashboard():
 
     session["last_active"] = time.time()
 
-    subscribers = load_subscribers()
-    return render_template("admin_dashboard.html", subscribers=subscribers)
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Statistiques
+    cur.execute("SELECT COUNT(*) as count FROM subscribers")
+    subscriber_count = cur.fetchone()['count']
+    
+    cur.execute("SELECT COUNT(*) as count FROM users WHERE status = 'pending'")
+    pending_users = cur.fetchone()['count']
+    
+    cur.execute("SELECT COUNT(*) as count FROM submissions WHERE status = 'pending'")
+    pending_submissions = cur.fetchone()['count']
+    
+    # Listes pour administration
+    cur.execute("SELECT email FROM subscribers ORDER BY subscribed_at DESC")
+    subscribers = [row["email"] for row in cur.fetchall()]
+    
+    cur.execute("""
+        SELECT u.*, 
+               (SELECT COUNT(*) FROM submissions s WHERE s.user_id = u.id) as submission_count
+        FROM users u 
+        ORDER BY u.created_at DESC
+    """)
+    users = cur.fetchall()
+    
+    cur.execute("""
+        SELECT s.*, u.email as user_email, u.company_name 
+        FROM submissions s
+        JOIN users u ON s.user_id = u.id
+        ORDER BY s.created_at DESC
+    """)
+    submissions = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+
+    return render_template("admin/dashboard.html", 
+                         subscribers=subscribers,
+                         users=users,
+                         submissions=submissions,
+                         stats={
+                             'subscriber_count': subscriber_count,
+                             'pending_users': pending_users,
+                             'pending_submissions': pending_submissions
+                         })
+
+@app.route("/admin/approve_user/<int:user_id>", methods=["POST"])
+def approve_user(user_id):
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET status = 'approved', approved_at = NOW() WHERE id = %s", (user_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    flash("Utilisateur approuvé ✅", "success")
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/reject_user/<int:user_id>", methods=["POST"])
+def reject_user(user_id):
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE users SET status = 'rejected' WHERE id = %s", (user_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    flash("Utilisateur rejeté ❌", "info")
+    return redirect(url_for("admin_dashboard"))
+
+@app.route("/admin/approve_submission/<int:submission_id>", methods=["POST"])
+def approve_submission(submission_id):
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE submissions SET status = 'approved' WHERE id = %s", (submission_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    flash("Soumission approuvée ✅", "success")
+    return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/delete/<email>", methods=["POST"])
 def delete_subscriber(email):
@@ -241,3 +560,6 @@ def admin_logout():
     session.clear()
     flash("Déconnexion réussie 👋", "success")
     return redirect(url_for("admin_login"))
+
+if __name__ == "__main__":
+    app.run(debug=True)

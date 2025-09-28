@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prévisualisation - Newsletter Locale</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background-color: #fff3ed;
+            color: #333;
+        }
+        
+        header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+            background-color: #fff3ed;
+        }
+        
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+        }
+        
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #111;
+            font-weight: 500;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 30px;
+        }
+        
+        .preview-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .newsletter-preview {
+            border: 2px solid #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .category-tag {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .preview-title {
+            margin: 5px 0 10px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .preview-description {
+            margin: 0 0 15px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .preview-image {
+            max-width: 200px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .preview-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .preview-link:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .info-box h4 {
+            margin: 0 0 10px;
+            color: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Newsletter Locale</h1>
+        <nav>
+            <a href="/dashboard">Mon Espace</a>
+            <a href="/submit">Nouvelle soumission</a>
+            <a href="/logout">Déconnexion</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="preview-card">
+            <h2>Prévisualisation de votre soumission</h2>
+            
+            <div class="info-box">
+                <h4>Comment votre contenu apparaîtra dans la newsletter :</h4>
+                <p>Voici un aperçu de votre annonce telle qu'elle sera vue par les abonnés à la newsletter.</p>
+            </div>
+
+            <div class="newsletter-preview">
+                <span class="category-tag">{{ data.category|upper }}</span>
+                <h3 class="preview-title">{{ data.title }}</h3>
+                <p class="preview-description">{{ data.description }}</p>
+                
+                {% if data.image_url %}
+                    <img src="{{ data.image_url }}" alt="Image de l'annonce" class="preview-image" onerror="this.style.display='none'">
+                {% endif %}
+                
+                {% if data.link_url %}
+                    <br><a href="{{ data.link_url }}" class="preview-link" target="_blank">Lire la suite</a>
+                {% endif %}
+            </div>
+
+            <div class="actions">
+                <a href="/submit" class="btn btn-secondary">Modifier</a>
+                <form method="POST" action="/submit" style="display: inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="title" value="{{ data.title }}">
+                    <input type="hidden" name="description" value="{{ data.description }}">
+                    <input type="hidden" name="image_url" value="{{ data.image_url }}">
+                    <input type="hidden" name="link_url" value="{{ data.link_url }}">
+                    <input type="hidden" name="category" value="{{ data.category }}">
+                    <button type="submit" class="btn">Confirmer et soumettre</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
