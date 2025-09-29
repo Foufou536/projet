@@ -387,7 +387,10 @@
                                             <button type="submit" class="btn btn-success">Approuver</button>
                                         </form>
                                         <br>
-                                        <button class="btn btn-danger" onclick="rejectSubmission({{ submission.id }})">Rejeter</button>
+                                        <form action="{{ url_for('reject_submission', submission_id=submission.id) }}" method="POST" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Rejeter cette soumission ?')">Rejeter</button>
+                                        </form>
                                     {% endif %}
                                 </div>
                             </div>
@@ -400,26 +403,16 @@
 
     <script>
         function showTab(tabName) {
-            // Cacher tous les contenus
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.classList.remove('active');
             });
             
-            // Désactiver tous les onglets
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
             
-            // Activer l'onglet et le contenu sélectionnés
             document.getElementById(tabName).classList.add('active');
             event.target.classList.add('active');
-        }
-
-        function rejectSubmission(submissionId) {
-            if (confirm('Êtes-vous sûr de vouloir rejeter cette soumission ?')) {
-                // Ici vous pourriez ajouter la route de rejet
-                alert('Fonctionnalité de rejet à implémenter');
-            }
         }
     </script>
 </body>

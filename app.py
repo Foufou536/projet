@@ -543,6 +543,21 @@ def approve_submission(submission_id):
     conn.close()
     
     flash("Soumission approuvée ✅", "success")
+    return redirect(url_for("admin_dashboard")) 
+    
+@app.route("/admin/reject_submission/<int:submission_id>", methods=["POST"])
+def reject_submission(submission_id):
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("UPDATE submissions SET status = 'rejected' WHERE id = %s", (submission_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    flash("Soumission rejetée", "info")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/delete/<email>", methods=["POST"])
