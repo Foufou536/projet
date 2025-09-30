@@ -395,18 +395,6 @@ def submit_newsletter():
     
     return render_template("submission/create.html")
 
-@app.route("/preview", methods=["POST"])
-@approved_user_required
-def preview_submission():
-    data = {
-        'title': request.form.get("title", ""),
-        'description': request.form.get("description", ""),
-        'image_url': request.form.get("image_url", ""),
-        'link_url': request.form.get("link_url", ""),
-        'category': request.form.get("category", "general")
-    }
-    return render_template("submission/preview.html", data=data)
-
 # ==========================
 # 🔑 Interface Admin (existante + nouvelles fonctionnalités)
 # ==========================
@@ -543,8 +531,8 @@ def approve_submission(submission_id):
     conn.close()
     
     flash("Soumission approuvée ✅", "success")
-    return redirect(url_for("admin_dashboard")) 
-    
+    return redirect(url_for("admin_dashboard"))
+
 @app.route("/admin/reject_submission/<int:submission_id>", methods=["POST"])
 def reject_submission(submission_id):
     if not session.get("admin"):

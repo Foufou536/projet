@@ -125,6 +125,11 @@
             border-radius: 8px;
             margin-top: 30px;
             border: 2px dashed #dee2e6;
+            display: none;
+        }
+        
+        .preview-section.show {
+            display: block;
         }
         
         .form-actions {
@@ -198,11 +203,11 @@
             <div class="form-actions">
                 <button type="submit" class="btn">Soumettre</button>
                 <button type="button" class="btn btn-secondary" onclick="previewSubmission()">Prévisualiser</button>
-                <a href="/dashboard" class="btn btn-secondary">Annuler</a>
+                <a href="/dashboard" class="btn btn-secondary" style="text-decoration: none; line-height: 1.5;">Annuler</a>
             </div>
         </form>
 
-        <div id="preview" class="preview-section" style="display: none;">
+        <div id="preview" class="preview-section">
             <h3>Aperçu de votre soumission</h3>
             <div id="previewContent"></div>
         </div>
@@ -224,36 +229,27 @@
             let previewHtml = `
                 <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: white;">
                     <span style="color: #007bff; font-weight: bold; font-size: 12px;">${category.toUpperCase()}</span>
-                    <h4 style="margin: 5px 0 10px; color: #333;">${title}</h4>
-                    <p style="margin: 0 0 10px; color: #666;">${description}</p>
+                    <h4 style="margin: 5px 0 10px; color: #333;">${escapeHtml(title)}</h4>
+                    <p style="margin: 0 0 10px; color: #666;">${escapeHtml(description)}</p>
             `;
 
             if (imageUrl) {
-                previewHtml += `<img src="${imageUrl}" style="max-width: 150px; border-radius: 4px; margin: 10px 0;" onerror="this.style.display='none'">`;
+                previewHtml += `<img src="${escapeHtml(imageUrl)}" style="max-width: 150px; border-radius: 4px; margin: 10px 0;" onerror="this.style.display='none'">`;
             }
 
             if (linkUrl) {
-                previewHtml += `<br><a href="${linkUrl}" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">En savoir plus</a>`;
+                previewHtml += `<br><a href="${escapeHtml(linkUrl)}" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">En savoir plus</a>`;
             }
 
             previewHtml += `</div>`;
 
             document.getElementById('previewContent').innerHTML = previewHtml;
-            document.getElementById('preview').style.display = 'block';
+            document.getElementById('preview').classList.add('show');
             document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Compteur de caractères
-        document.getElementById('title').addEventListener('input', function() {
-            const maxLength = this.maxLength;
-            const currentLength = this.value.length;
-            const helpText = this.parentNode.querySelector('.help-text');
-            helpText.textContent = `${currentLength}/${maxLength} caractères. Soyez accrocheur !`;
-        });
-
-        document.getElementById('description').addEventListener('input', function() {
-            const maxLength = this.maxLength;
-            const currentLength = this.value.length;
-            const helpText = this.parentNode.querySelector('.help-text');
-            helpText.textContent = `${currentLength}/${maxLength} caractères. Donnez envie aux lecteurs !`;
-        });
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
