@@ -253,3 +253,21 @@
             div.textContent = text;
             return div.innerHTML;
         }
+
+        // Compteur de caractères
+        document.getElementById('title').addEventListener('input', function() {
+            const maxLength = this.maxLength;
+            const currentLength = this.value.length;
+            const helpText = this.parentNode.querySelector('.help-text');
+            helpText.textContent = `${currentLength}/${maxLength} caractères. Soyez accrocheur !`;
+        });
+
+        document.getElementById('description').addEventListener('input', function() {
+            const maxLength = this.maxLength;
+            const currentLength = this.value.length;
+            const helpText = this.parentNode.querySelector('.help-text');
+            helpText.textContent = `${currentLength}/${maxLength} caractères. Donnez envie aux lecteurs !`;
+        });
+    </script>
+</body>
+</html>
