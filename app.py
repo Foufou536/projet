@@ -393,7 +393,45 @@ def submit_newsletter():
         flash("Votre soumission a été envoyée ! Elle sera examinée prochainement.", "success")
         return redirect(url_for('user_dashboard'))
     
-    return render_template("submission/create.html")
+    return render_template("submission/create.html") @app.route("/edit_submission/<int:submission_id>", methods=["GET", "POST"])
+
+@approved_user_required
+def edit_submission(submission_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Vérifier que la soumission appartient à l'utilisateur
+    cur.execute("SELECT * FROM submissions WHERE id = %s AND user_id = %s", (submission_id, session['user_id']))
+    submission = cur.fetchone()
+    
+    if not submission:
+        flash("Soumission introuvable", "error")
+        cur.close()
+        conn.close()
+        return redirect(url_for('user_dashboard'))
+    
+    if request.method == "POST":
+        title = request.form.get("title", "").strip()
+        description = request.form.get("description", "").strip()
+        image_url = request.form.get("image_url", "").strip()
+        link_url = request.form.get("link_url", "").strip()
+        category = request.form.get("category", "general")
+        
+        cur.execute("""
+            UPDATE submissions 
+            SET title = %s, description = %s, image_url = %s, link_url = %s, category = %s
+            WHERE id = %s
+        """, (title, description, image_url, link_url, category, submission_id))
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        flash("Soumission modifiée avec succès", "success")
+        return redirect(url_for('user_dashboard'))
+    
+    cur.close()
+    conn.close()
+    return render_template("submission/edit.html", submission=submission)
 
 # ==========================
 # 🔑 Interface Admin (existante + nouvelles fonctionnalités)
