@@ -393,8 +393,9 @@ def submit_newsletter():
         flash("Votre soumission a été envoyée ! Elle sera examinée prochainement.", "success")
         return redirect(url_for('user_dashboard'))
     
-    return render_template("submission/create.html") @app.route("/edit_submission/<int:submission_id>", methods=["GET", "POST"])
+    return render_template("submission/create.html")
 
+@app.route("/edit_submission/<int:submission_id>", methods=["GET", "POST"])
 @approved_user_required
 def edit_submission(submission_id):
     conn = get_db_connection()
