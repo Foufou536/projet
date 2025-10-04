@@ -435,6 +435,37 @@ def edit_submission(submission_id):
     return render_template("submission/edit.html", submission=submission)
 
 # ==========================
+# 🔧 Fonction helper pour générer HTML
+# ==========================
+def generate_html_code(submissions):
+    """Génère le code HTML pour la newsletter"""
+    html = ""
+    for sub in submissions:
+        html += f'''
+    <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; margin-bottom: 20px; display: flex; gap: 20px; align-items: flex-start;">
+        <div style="flex: 1;">
+            <span style="color: #007bff; font-weight: bold; font-size: 12px;">{sub["category"].upper()}</span>
+            <h4 style="margin: 5px 0 10px; color: #333;">{sub["title"]}</h4>
+            <p style="margin: 0 0 10px; color: #666;">{sub["description"]}</p>
+'''
+        if sub.get("link_url"):
+            html += f'            <a href="{sub["link_url"]}" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; display: inline-block;">Lire la suite</a>\n'
+        
+        html += '        </div>\n'
+        
+        if sub.get("image_url"):
+            html += f'        <img src="{sub["image_url"]}" style="width: 180px; height: auto; border-radius: 8px;" alt="{sub["title"]}">\n'
+        
+        html += '    </div>\n'
+    
+    return html
+
+# Rendre la fonction disponible dans les templates
+@app.context_processor
+def utility_processor():
+    return dict(generate_html_code=generate_html_code)
+
+# ==========================
 # 🔑 Interface Admin (existante + nouvelles fonctionnalités)
 # ==========================
 login_attempts = {}
@@ -526,6 +557,29 @@ def admin_dashboard():
                              'pending_users': pending_users,
                              'pending_submissions': pending_submissions
                          })
+
+@app.route("/admin/generate_newsletter")
+def generate_newsletter():
+    if not session.get("admin"):
+        return redirect(url_for("admin_login"))
+    
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Récupérer toutes les soumissions approuvées
+    cur.execute("""
+        SELECT s.*, u.company_name 
+        FROM submissions s
+        JOIN users u ON s.user_id = u.id
+        WHERE s.status = 'approved'
+        ORDER BY s.category, s.created_at DESC
+    """)
+    submissions = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    return render_template("admin/generate_newsletter.html", submissions=submissions)
 
 @app.route("/admin/approve_user/<int:user_id>", methods=["POST"])
 def approve_user(user_id):

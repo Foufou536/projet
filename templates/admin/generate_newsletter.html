@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générer Newsletter - Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        
+        header {
+            background: #343a40;
+            color: white;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .btn-back {
+            background: #6c757d;
+            color: white;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .actions {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .btn {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
+        }
+        
+        .preview-section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .newsletter-item {
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .newsletter-content {
+            flex: 1;
+        }
+        
+        .newsletter-image {
+            width: 180px;
+            height: auto;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        
+        .category-tag {
+            color: #007bff;
+            font-weight: bold;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        .newsletter-title {
+            margin: 5px 0 10px;
+            color: #333;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .newsletter-description {
+            margin: 0 0 15px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .newsletter-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 18px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+        
+        .code-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .code-section.show {
+            display: block;
+        }
+        
+        .code-content {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .alert-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .alert-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Générer la Newsletter</h1>
+        <a href="/admin/dashboard" class="btn-back">← Retour au dashboard</a>
+    </header>
+
+    <div class="container">
+        <div class="actions">
+            <h2>{{ submissions|length }} soumission(s) approuvée(s)</h2>
+            <button class="btn" onclick="toggleCode()">Voir le code HTML</button>
+            <button class="btn btn-success" onclick="copyCode()">Copier le code</button>
+        </div>
+
+        {% if submissions %}
+            <div class="alert alert-info">
+                <strong>Aperçu de la newsletter :</strong> Voici comment les soumissions apparaîtront dans votre newsletter.
+            </div>
+
+            <div class="preview-section">
+                <h3 style="text-align: center; color: #003366; border-bottom: 3px solid #005ca8; display: inline-block; padding-bottom: 6px;">LES PLANS MALIN</h3>
+                
+                {% for submission in submissions %}
+                    <div class="newsletter-item">
+                        <div class="newsletter-content">
+                            <span class="category-tag">{{ submission.category|upper }}</span>
+                            <h4 class="newsletter-title">{{ submission.title }}</h4>
+                            <p class="newsletter-description">{{ submission.description }}</p>
+                            {% if submission.link_url %}
+                                <a href="{{ submission.link_url }}" class="newsletter-link">Lire la suite</a>
+                            {% endif %}
+                        </div>
+                        {% if submission.image_url %}
+                            <img src="{{ submission.image_url }}" alt="{{ submission.title }}" class="newsletter-image" onerror="this.style.display='none'">
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div id="codeSection" class="code-section">
+                <h3>Code HTML à copier :</h3>
+                <div class="code-content" id="htmlCode">{{ generate_html_code(submissions) }}</div>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <strong>Aucune soumission approuvée</strong><br>
+                Il n'y a actuellement aucune soumission approuvée à inclure dans la newsletter.
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function toggleCode() {
+            const codeSection = document.getElementById('codeSection');
+            codeSection.classList.toggle('show');
+        }
+
+        function copyCode() {
+            const code = document.getElementById('htmlCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copié dans le presse-papiers !');
+            }).catch(err => {
+                console.error('Erreur de copie:', err);
+                alert('Erreur lors de la copie. Veuillez sélectionner et copier manuellement.');
+            });
+        }
+    </script>
+</body>
+</html>
