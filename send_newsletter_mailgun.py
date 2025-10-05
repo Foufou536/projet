@@ -12,7 +12,7 @@ MAILGUN_DOMAIN = os.getenv("sandbox7d51424c2f774c35bb06610a6942ac03.mailgun.org"
 MAILGUN_FROM = f"Newsletter Locale <newsletter@{MAILGUN_DOMAIN}>"
 
 # Connexion PostgreSQL
-DATABASE_URL = os.getenv("postgresql://neondb_owner:npg_a5QkqGrS1bzu@ep-purple-bird-ag358frh-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require")
+DATABASE_URL = os.getenv("postgresql://neondb_owner:npg_a5QkqGrS1bzu@ep-purple-bird-ag358frh-pooler.c-2.eu-central-1.aws.neon.tech/neondb?sslmode=require")
 conn = psycopg2.connect(DATABASE_URL, sslmode="require", cursor_factory=RealDictCursor)
 cur = conn.cursor()
 
