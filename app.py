@@ -19,8 +19,10 @@ load_dotenv()
 
 app = Flask(__name__)
 
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "motdepasse_par_defaut")
-app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut")
+# MOT DE PASSE ADMIN EN DUR (à changer après si besoin)
+ADMIN_PASSWORD_FIXED = "admin2025"
+
+app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut_123456")
 
 # Activer la protection CSRF
 csrf = CSRFProtect(app)
@@ -48,7 +50,6 @@ def init_db():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Table des abonnés (existe déjà)
     cur.execute("""
         CREATE TABLE IF NOT EXISTS subscribers (
             id SERIAL PRIMARY KEY,
@@ -57,7 +58,6 @@ def init_db():
         )
     """)
     
-    # Table des utilisateurs contributeurs
     cur.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
@@ -71,7 +71,6 @@ def init_db():
         )
     """)
     
-    # Table des soumissions de newsletter
     cur.execute("""
         CREATE TABLE IF NOT EXISTS submissions (
             id SERIAL PRIMARY KEY,
@@ -126,7 +125,7 @@ def approved_user_required(f):
     return decorated_function
 
 # ==========================
-# 📩 Newsletter (fonctions existantes)
+# 📩 Newsletter
 # ==========================
 def load_newsletter_content():
     use_new = False
@@ -145,7 +144,7 @@ def load_newsletter_content():
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
 # ==========================
-# 👥 Gestion abonnés via PostgreSQL (fonctions existantes)
+# 👥 Gestion abonnés
 # ==========================
 def load_subscribers():
     conn = get_db_connection()
@@ -177,7 +176,7 @@ def delete_subscriber_db(email):
     conn.close()
 
 # ==========================
-# 🌍 Routes publiques (existantes)
+# 🌍 Routes publiques
 # ==========================
 @app.route("/")
 def index():
@@ -245,7 +244,7 @@ def ads_txt():
     return app.send_static_file('ads.txt'), 200, {'Content-Type': 'text/plain'}
 
 # ==========================
-# 🔐 Authentification utilisateurs (NOUVEAU)
+# 🔐 Authentification utilisateurs
 # ==========================
 @app.route("/register", methods=["GET", "POST"])
 def user_register():
@@ -255,7 +254,6 @@ def user_register():
         company_name = request.form.get("company_name", "").strip()
         phone = request.form.get("phone", "").strip()
         
-        # Validation
         if not email or not password or not company_name:
             flash("Tous les champs obligatoires doivent être remplis.", "error")
             return render_template("auth/register.html")
@@ -270,7 +268,6 @@ def user_register():
             flash("Adresse email invalide.", "error")
             return render_template("auth/register.html")
         
-        # Vérifier si l'utilisateur existe déjà
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("SELECT id FROM users WHERE email = %s", (email,))
@@ -280,7 +277,6 @@ def user_register():
             conn.close()
             return render_template("auth/register.html")
         
-        # Créer l'utilisateur
         password_hash = generate_password_hash(password)
         cur.execute("""
             INSERT INTO users (email, password_hash, company_name, phone)
@@ -335,11 +331,9 @@ def user_dashboard():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Informations utilisateur
     cur.execute("SELECT * FROM users WHERE id = %s", (session['user_id'],))
     user = cur.fetchone()
     
-    # Soumissions de l'utilisateur
     cur.execute("""
         SELECT * FROM submissions 
         WHERE user_id = %s 
@@ -353,7 +347,7 @@ def user_dashboard():
     return render_template("auth/dashboard.html", user=user, submissions=submissions)
 
 # ==========================
-# 📝 Système de soumissions (NOUVEAU)
+# 📝 Système de soumissions
 # ==========================
 @app.route("/submit", methods=["GET", "POST"])
 @approved_user_required
@@ -369,7 +363,6 @@ def submit_newsletter():
             flash("Titre et description sont obligatoires.", "error")
             return render_template("submission/create.html")
         
-        # Validation URL basique
         url_pattern = re.compile(r'^https?://')
         if image_url and not url_pattern.match(image_url):
             flash("L'URL de l'image doit commencer par http:// ou https://", "error")
@@ -379,7 +372,6 @@ def submit_newsletter():
             flash("L'URL du lien doit commencer par http:// ou https://", "error")
             return render_template("submission/create.html")
         
-        # Sauvegarder la soumission
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
@@ -401,7 +393,6 @@ def edit_submission(submission_id):
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Vérifier que la soumission appartient à l'utilisateur
     cur.execute("SELECT * FROM submissions WHERE id = %s AND user_id = %s", (submission_id, session['user_id']))
     submission = cur.fetchone()
     
@@ -435,10 +426,9 @@ def edit_submission(submission_id):
     return render_template("submission/edit.html", submission=submission)
 
 # ==========================
-# 🔧 Fonction helper pour générer HTML
+# 🔧 Fonction helper
 # ==========================
 def generate_html_code(submissions):
-    """Génère le code HTML pour la newsletter"""
     html = ""
     for sub in submissions:
         html += f'''
@@ -460,54 +450,41 @@ def generate_html_code(submissions):
     
     return html
 
-# Rendre la fonction disponible dans les templates
 @app.context_processor
 def utility_processor():
     return dict(generate_html_code=generate_html_code)
 
 # ==========================
-# 🔑 Interface Admin (existante + nouvelles fonctionnalités)
+# 🔑 Interface Admin SIMPLIFIÉE
 # ==========================
-login_attempts = {}
-
 @app.route("/admin_login", methods=["GET", "POST"])
 def admin_login():
-    user_ip = request.remote_addr
-    now = datetime.now()
-
-    if user_ip in login_attempts:
-        login_attempts[user_ip] = [
-            t for t in login_attempts[user_ip] if now - t < timedelta(minutes=10)
-        ]
-
     if request.method == "POST":
-        password = request.form.get("password")
-
-        if user_ip in login_attempts and len(login_attempts[user_ip]) >= 5:
-            flash("⛔ Trop de tentatives. Réessayez dans 10 minutes.", "danger")
-            return redirect(url_for("admin_login"))
-
-        if password == ADMIN_PASSWORD:
+        password = request.form.get("password", "")
+        
+        print(f"🔍 DEBUG - Password reçu: '{password}'")
+        print(f"🔍 DEBUG - Password attendu: '{ADMIN_PASSWORD_FIXED}'")
+        
+        if password == ADMIN_PASSWORD_FIXED:
             session["admin"] = True
             session["last_active"] = time.time()
-            flash("Connexion réussie ✅", "success")
+            flash("✅ Connexion réussie", "success")
             return redirect(url_for("admin_dashboard"))
         else:
-            login_attempts.setdefault(user_ip, []).append(now)
-            flash("Mot de passe incorrect ❌", "danger")
+            flash("❌ Mot de passe incorrect", "danger")
             return redirect(url_for("admin_login"))
-
+    
     return render_template("admin_login.html")
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
     if not session.get("admin"):
-        flash("Accès refusé 🚫", "danger")
+        flash("🚫 Accès refusé", "danger")
         return redirect(url_for("admin_login"))
 
-    if time.time() - session.get("last_active", 0) > 600:
+    if time.time() - session.get("last_active", 0) > 3600:
         session.clear()
-        flash("Session expirée ⏳", "warning")
+        flash("⏳ Session expirée", "warning")
         return redirect(url_for("admin_login"))
 
     session["last_active"] = time.time()
@@ -515,7 +492,6 @@ def admin_dashboard():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Statistiques
     cur.execute("SELECT COUNT(*) as count FROM subscribers")
     subscriber_count = cur.fetchone()['count']
     
@@ -525,7 +501,6 @@ def admin_dashboard():
     cur.execute("SELECT COUNT(*) as count FROM submissions WHERE status = 'pending'")
     pending_submissions = cur.fetchone()['count']
     
-    # Listes pour administration
     cur.execute("SELECT email FROM subscribers ORDER BY subscribed_at DESC")
     subscribers = [row["email"] for row in cur.fetchall()]
     
@@ -566,7 +541,6 @@ def generate_newsletter():
     conn = get_db_connection()
     cur = conn.cursor()
     
-    # Récupérer toutes les soumissions approuvées
     cur.execute("""
         SELECT s.*, u.company_name 
         FROM submissions s
@@ -593,7 +567,7 @@ def approve_user(user_id):
     cur.close()
     conn.close()
     
-    flash("Utilisateur approuvé ✅", "success")
+    flash("✅ Utilisateur approuvé", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/reject_user/<int:user_id>", methods=["POST"])
@@ -608,7 +582,7 @@ def reject_user(user_id):
     cur.close()
     conn.close()
     
-    flash("Utilisateur rejeté ❌", "info")
+    flash("❌ Utilisateur rejeté", "info")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/approve_submission/<int:submission_id>", methods=["POST"])
@@ -623,7 +597,7 @@ def approve_submission(submission_id):
     cur.close()
     conn.close()
     
-    flash("Soumission approuvée ✅", "success")
+    flash("✅ Soumission approuvée", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/reject_submission/<int:submission_id>", methods=["POST"])
@@ -644,17 +618,17 @@ def reject_submission(submission_id):
 @app.route("/admin/delete/<email>", methods=["POST"])
 def delete_subscriber(email):
     if not session.get("admin"):
-        flash("Accès refusé 🚫", "danger")
+        flash("🚫 Accès refusé", "danger")
         return redirect(url_for("admin_login"))
 
     delete_subscriber_db(email)
-    flash(f"✅ {email} a été supprimé", "success")
+    flash(f"✅ {email} supprimé", "success")
     return redirect(url_for("admin_dashboard"))
 
 @app.route("/admin/logout")
 def admin_logout():
     session.clear()
-    flash("Déconnexion réussie 👋", "success")
+    flash("👋 Déconnexion réussie", "success")
     return redirect(url_for("admin_login"))
 
 if __name__ == "__main__":
