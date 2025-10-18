@@ -20,7 +20,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # MOT DE PASSE ADMIN EN DUR (à changer après si besoin)
-ADMIN_PASSWORD_FIXED = os.getenv("ADMIN_PASSWORD","admin2025")
+ADMIN_PASSWORD_FIXED = "admin2025"
 
 app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut_123456")
 
@@ -424,6 +424,31 @@ def edit_submission(submission_id):
     cur.close()
     conn.close()
     return render_template("submission/edit.html", submission=submission)
+
+@app.route("/delete_submission/<int:submission_id>", methods=["POST"])
+@login_required
+def delete_submission(submission_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+    
+    # Vérifier que la soumission appartient bien à l'utilisateur
+    cur.execute("SELECT * FROM submissions WHERE id = %s AND user_id = %s", (submission_id, session['user_id']))
+    submission = cur.fetchone()
+    
+    if not submission:
+        flash("Soumission introuvable ou vous n'avez pas l'autorisation", "error")
+        cur.close()
+        conn.close()
+        return redirect(url_for('user_dashboard'))
+    
+    # Supprimer la soumission
+    cur.execute("DELETE FROM submissions WHERE id = %s", (submission_id,))
+    conn.commit()
+    cur.close()
+    conn.close()
+    
+    flash("🗑️ Soumission supprimée avec succès", "success")
+    return redirect(url_for('user_dashboard'))
 
 # ==========================
 # 🔧 Fonction helper
