@@ -20,7 +20,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # MOT DE PASSE ADMIN EN DUR (à changer après si besoin)
-ADMIN_PASSWORD_FIXED = "admin2025"
+ADMIN_PASSWORD_FIXED = os.getenv("ADMIN_PASSWORD","admin2025")
 
 app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut_123456")
 
