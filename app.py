@@ -19,8 +19,8 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# MOT DE PASSE ADMIN EN DUR (à changer après si besoin)
-ADMIN_PASSWORD_FIXED = "admin2025"
+# MOT DE PASSE ADMIN depuis variable d'environnement
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin2025")
 
 app.secret_key = os.getenv("SECRET_KEY", "cle_secrete_par_defaut_123456")
 
@@ -488,9 +488,9 @@ def admin_login():
         password = request.form.get("password", "")
         
         print(f"🔍 DEBUG - Password reçu: '{password}'")
-        print(f"🔍 DEBUG - Password attendu: '{ADMIN_PASSWORD_FIXED}'")
+        print(f"🔍 DEBUG - Password attendu: '{ADMIN_PASSWORD}'")
         
-        if password == ADMIN_PASSWORD_FIXED:
+        if password == ADMIN_PASSWORD:
             session["admin"] = True
             session["last_active"] = time.time()
             flash("✅ Connexion réussie", "success")
