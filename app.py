@@ -45,6 +45,54 @@ DATABASE_URL = os.getenv("DATABASE_URL")
 def get_db_connection():
     return psycopg2.connect(DATABASE_URL, sslmode="require", cursor_factory=RealDictCursor)
 
+# ==========================
+# 💾 SYSTÈME DE CACHE (OPTIMISATION)
+# ==========================
+_cache = {
+    'subscriber_count': {'value': 0, 'timestamp': 0},
+    'subscribers_list': {'value': [], 'timestamp': 0}
+}
+
+CACHE_DURATION = 300  # 5 minutes en secondes
+
+def get_cached_subscriber_count():
+    """Récupère le nombre d'abonnés avec cache de 5 minutes"""
+    now = time.time()
+    if now - _cache['subscriber_count']['timestamp'] > CACHE_DURATION:
+        try:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute("SELECT COUNT(*) as count FROM subscribers")
+            count = cur.fetchone()['count']
+            cur.close()
+            conn.close()
+            
+            _cache['subscriber_count']['value'] = count
+            _cache['subscriber_count']['timestamp'] = now
+        except Exception as e:
+            print(f"Erreur cache subscriber count: {e}")
+            # En cas d'erreur, retourner la dernière valeur en cache
+            return _cache['subscriber_count']['value']
+    
+    return _cache['subscriber_count']['value']
+
+def invalidate_subscriber_cache():
+    """Invalide le cache des abonnés (appelé après ajout/suppression)"""
+    _cache['subscriber_count']['timestamp'] = 0
+    _cache['subscribers_list']['timestamp'] = 0
+
+# ==========================
+# 🚀 Cache pour les fichiers statiques
+# ==========================
+@app.after_request
+def add_cache_headers(response):
+    """Ajoute des headers de cache pour les fichiers statiques"""
+    if request.path.startswith('/static/'):
+        # Cache les fichiers statiques pendant 7 jours
+        response.cache_control.max_age = 604800
+        response.cache_control.public = True
+    return response
+
 # Création des tables
 def init_db():
     conn = get_db_connection()
@@ -144,9 +192,10 @@ def load_newsletter_content():
         return "<p>La newsletter n'est pas encore disponible.</p>"
 
 # ==========================
-# 👥 Gestion abonnés
+# 👥 Gestion abonnés (OPTIMISÉ)
 # ==========================
 def load_subscribers():
+    """Charge la liste complète des abonnés (utilisé uniquement dans l'admin)"""
     conn = get_db_connection()
     cur = conn.cursor()
     cur.execute("SELECT email FROM subscribers ORDER BY subscribed_at DESC")
@@ -161,6 +210,8 @@ def save_subscriber(email):
     try:
         cur.execute("INSERT INTO subscribers (email) VALUES (%s) ON CONFLICT DO NOTHING", (email,))
         conn.commit()
+        # Invalider le cache après ajout
+        invalidate_subscriber_cache()
     except Exception as e:
         print(f"Erreur insertion subscriber: {e}")
     finally:
@@ -174,15 +225,28 @@ def delete_subscriber_db(email):
     conn.commit()
     cur.close()
     conn.close()
+    # Invalider le cache après suppression
+    invalidate_subscriber_cache()
+
+def check_subscriber_exists(email):
+    """Vérifie si un email existe déjà (requête optimisée)"""
+    conn = get_db_connection()
+    cur = conn.cursor()
+    cur.execute("SELECT 1 FROM subscribers WHERE email = %s LIMIT 1", (email,))
+    exists = cur.fetchone() is not None
+    cur.close()
+    conn.close()
+    return exists
 
 # ==========================
-# 🌍 Routes publiques
+# 🌍 Routes publiques (OPTIMISÉES)
 # ==========================
 @app.route("/")
 def index():
-    subscribers = load_subscribers()
+    # Utilise le cache au lieu de charger tous les abonnés
+    subscriber_count = get_cached_subscriber_count()
     session["form_start_time"] = time.time()
-    return render_template("index.html", subscriber_count=len(subscribers))
+    return render_template("index.html", subscriber_count=subscriber_count)
 
 @app.route("/subscribe", methods=["POST"])
 def subscribe():
@@ -202,13 +266,14 @@ def subscribe():
     except EmailNotValidError:
         return "Adresse email invalide", 400
 
-    subscribers = load_subscribers()
-    if email in subscribers:
-        return render_template("already_subscribed.html", subscriber_count=len(subscribers))
+    # Utilise la fonction optimisée
+    if check_subscriber_exists(email):
+        subscriber_count = get_cached_subscriber_count()
+        return render_template("already_subscribed.html", subscriber_count=subscriber_count)
     else:
         save_subscriber(email)
-        subscribers.append(email)
-        return render_template("success.html", subscriber_count=len(subscribers))
+        subscriber_count = get_cached_subscriber_count()
+        return render_template("success.html", subscriber_count=subscriber_count)
 
 @app.route("/newsletter")
 def newsletter():
@@ -218,11 +283,11 @@ def newsletter():
 @app.route("/stats")
 def stats():
     try:
-        subscribers = load_subscribers()
+        subscriber_count = get_cached_subscriber_count()
         with open(STATS_FILE, "r", encoding="utf-8") as f:
             stats = json.load(f)
         return render_template("stats.html",
-                               nb_abonnes=len(subscribers),
+                               nb_abonnes=subscriber_count,
                                vues=stats.get("views", 0))
     except Exception as e:
         return f"Erreur lors de l'affichage des stats : {e}"
