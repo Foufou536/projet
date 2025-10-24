@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Newsletter Locale</title>
 
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+ <!-- ✅ AJOUTEZ CES LIGNES (après le title) -->
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+
+  <!-- Description pour Google -->
+  <meta name="description" content="Newsletter locale gratuite - Bons plans et actualités des commerçants d'Aurillac">
 
   <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8157672918956238"
