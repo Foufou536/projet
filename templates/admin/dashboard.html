@@ -5,87 +5,235 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+        * {
             margin: 0;
-            background-color: #f8f9fa;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a1a1a;
+            min-height: 100vh;
         }
         
+        /* ========== HEADER ========== */
         header {
-            background: #343a40;
-            color: white;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(0, 145, 255, 0.1);
         }
         
         header h1 {
-            margin: 0;
-            font-size: 24px;
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
         }
         
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-            padding: 8px 16px;
+        .logout-btn, .btn-success {
+            padding: 10px 20px;
+            border-radius: 10px;
             text-decoration: none;
-            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
         
+        /* ========== CONTAINER ========== */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 40px auto;
-            padding: 0 20px;
+            padding: 0 30px;
         }
         
+        /* ========== STATS GRID ========== */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
             margin-bottom: 40px;
         }
         
         .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 30px;
+            border-radius: 20px;
             text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #0091ff, #00d4ff);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 50px rgba(0, 145, 255, 0.2);
         }
         
         .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #007bff;
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
         }
         
         .stat-label {
-            color: #666;
-            margin-top: 5px;
+            color: #64748b;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
+        /* ========== SECTION AVEC ONGLETS ========== */
         .section {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            margin-bottom: 30px;
         }
         
-        .section-header {
-            background: #007bff;
-            color: white;
-            padding: 15px 20px;
-            margin: 0;
-            font-size: 18px;
+        /* ========== TABS ========== */
+        .tabs {
+            display: flex;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-bottom: 2px solid rgba(0, 145, 255, 0.1);
         }
         
-        .section-content {
-            padding: 20px;
+        .tab {
+            padding: 18px 30px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            flex: 1;
+            text-align: center;
+            font-weight: 600;
+            font-size: 15px;
+            color: #64748b;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #0091ff, #00d4ff);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
         
+        .tab.active {
+            background: white;
+            color: #0091ff;
+        }
+
+        .tab.active::after {
+            transform: scaleX(1);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(0, 145, 255, 0.05);
+            color: #0091ff;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab-content h3 {
+            font-size: 22px;
+            color: #1e293b;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+        
+        /* ========== TABLES ========== */
+        .table-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
         .table {
             width: 100%;
             border-collapse: collapse;
@@ -93,177 +241,289 @@
         
         .table th,
         .table td {
-            padding: 12px;
+            padding: 16px;
             text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid #f1f5f9;
         }
         
         .table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            font-weight: 700;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(0, 145, 255, 0.03);
         }
         
+        /* ========== BOUTONS ========== */
         .btn {
-            padding: 6px 12px;
+            padding: 8px 16px;
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            font-size: 12px;
-            margin: 2px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 3px;
+            transition: all 0.3s ease;
         }
         
         .btn-success {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
         }
         
         .btn-danger {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
         }
         
         .btn-info {
-            background-color: #17a2b8;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-info:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.4);
         }
         
+        /* ========== BADGES ========== */
         .badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
         
         .badge-warning {
-            background-color: #ffc107;
-            color: #212529;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
         }
         
         .badge-success {
-            background-color: #28a745;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
         }
         
         .badge-danger {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
             color: white;
         }
         
         .badge-secondary {
-            background-color: #6c757d;
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
             color: white;
         }
         
+        /* ========== ALERTS ========== */
         .alert {
-            padding: 12px 20px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert::before {
+            content: '✓';
+            font-size: 20px;
+            font-weight: bold;
         }
         
         .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 1px solid #6ee7b7;
         }
         
         .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .alert-danger::before {
+            content: '✕';
         }
         
         .alert-info {
-            background-color: #d1ecf1;
-            color: #0c5460;
-            border: 1px solid #bee5eb;
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+        }
+
+        .alert-info::before {
+            content: 'ℹ';
         }
         
+        /* ========== SUBMISSION PREVIEW ========== */
         .submission-preview {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #007bff;
-            margin: 10px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #0091ff;
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .submission-preview:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(0, 145, 255, 0.15);
         }
         
         .submission-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-size: 16px;
         }
         
         .submission-description {
-            color: #666;
+            color: #64748b;
             font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 10px;
         }
-        
-        .tabs {
-            display: flex;
-            background: #f8f9fa;
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
+
+        .submission-preview small {
+            color: #94a3b8;
+            font-size: 12px;
         }
-        
-        .tab {
-            padding: 15px 20px;
-            cursor: pointer;
-            background: #e9ecef;
-            border: none;
-            flex: 1;
-            text-align: center;
+
+        .submission-preview small strong {
+            color: #475569;
         }
-        
-        .tab.active {
-            background: white;
-            border-bottom: 3px solid #007bff;
+
+        .submission-preview a {
+            color: #0091ff;
+            text-decoration: none;
+            transition: color 0.2s;
         }
-        
-        .tab-content {
-            display: none;
-            padding: 20px;
+
+        .submission-preview a:hover {
+            color: #005ca8;
+            text-decoration: underline;
         }
-        
-        .tab-content.active {
-            display: block;
+
+        /* ========== SCROLLBAR ========== */
+        .table-wrapper::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            border-radius: 10px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #005ca8 0%, #003d6b 100%);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-bottom: 1px solid #e2e8f0;
+            }
+
+            .table-wrapper {
+                max-height: 400px;
+            }
+
+            .table th,
+            .table td {
+                padding: 12px 8px;
+                font-size: 13px;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <h1>Dashboard Admin</h1>
-        <a href="{{ url_for('admin_logout') }}" class="logout-btn">Déconnexion</a>
-        <a href="/admin/generate_newsletter" class="btn btn-success">📧 Générer la newsletter</a>
+        <div class="header-actions">
+            <a href="#" class="btn-success">📧 Générer la newsletter</a>
+            <a href="#" class="logout-btn">Déconnexion</a>
+        </div>
     </header>
 
     <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'danger' else 'info' }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <!-- Exemple d'alerte -->
+        <div class="alert alert-success">
+            Action réalisée avec succès !
+        </div>
 
         <!-- Statistiques -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">{{ stats.subscriber_count }}</div>
+                <div class="stat-number">156</div>
                 <div class="stat-label">Abonnés newsletter</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ stats.pending_users }}</div>
+                <div class="stat-number">3</div>
                 <div class="stat-label">Utilisateurs en attente</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ stats.pending_submissions }}</div>
+                <div class="stat-number">7</div>
                 <div class="stat-label">Soumissions en attente</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">{{ users|length }}</div>
+                <div class="stat-number">24</div>
                 <div class="stat-label">Total utilisateurs</div>
             </div>
         </div>
@@ -278,8 +538,8 @@
 
             <!-- Onglet Abonnés -->
             <div id="subscribers" class="tab-content active">
-                <h3>Liste des abonnés ({{ subscribers|length }})</h3>
-                <div style="max-height: 400px; overflow-y: auto;">
+                <h3>Liste des abonnés (156)</h3>
+                <div class="table-wrapper">
                     <table class="table">
                         <thead>
                             <tr>
@@ -288,17 +548,24 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for email in subscribers %}
-                                <tr>
-                                    <td>{{ email }}</td>
-                                    <td>
-                                        <form action="{{ url_for('delete_subscriber', email=email) }}" method="POST" style="display: inline;" onsubmit="return confirm('Supprimer cet abonné ?')">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                            <tr>
+                                <td>exemple1@email.com</td>
+                                <td>
+                                    <button class="btn btn-danger">Supprimer</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>exemple2@email.com</td>
+                                <td>
+                                    <button class="btn btn-danger">Supprimer</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>exemple3@email.com</td>
+                                <td>
+                                    <button class="btn btn-danger">Supprimer</button>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -306,97 +573,85 @@
 
             <!-- Onglet Utilisateurs -->
             <div id="users" class="tab-content">
-                <h3>Gestion des utilisateurs ({{ users|length }})</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th>Entreprise</th>
-                            <th>Statut</th>
-                            <th>Soumissions</th>
-                            <th>Inscrit le</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for user in users %}
+                <h3>Gestion des utilisateurs (24)</h3>
+                <div class="table-wrapper">
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.company_name }}</td>
+                                <th>Email</th>
+                                <th>Entreprise</th>
+                                <th>Statut</th>
+                                <th>Soumissions</th>
+                                <th>Inscrit le</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>commerce@exemple.com</td>
+                                <td>Ma Boutique</td>
+                                <td><span class="badge badge-warning">En attente</span></td>
+                                <td>0</td>
+                                <td>15/01/2025</td>
                                 <td>
-                                    <span class="badge badge-{% if user.status == 'pending' %}warning{% elif user.status == 'approved' %}success{% elif user.status == 'rejected' %}danger{% else %}secondary{% endif %}">
-                                        {% if user.status == 'pending' %}En attente
-                                        {% elif user.status == 'approved' %}Approuvé
-                                        {% elif user.status == 'rejected' %}Rejeté
-                                        {% else %}{{ user.status|title }}{% endif %}
-                                    </span>
-                                </td>
-                                <td>{{ user.submission_count }}</td>
-                                <td>{{ user.created_at.strftime('%d/%m/%Y') }}</td>
-                                <td>
-                                    {% if user.status == 'pending' %}
-                                        <form action="{{ url_for('approve_user', user_id=user.id) }}" method="POST" style="display: inline;">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-success">Approuver</button>
-                                        </form>
-                                        <form action="{{ url_for('reject_user', user_id=user.id) }}" method="POST" style="display: inline;">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-danger">Rejeter</button>
-                                        </form>
-                                    {% endif %}
+                                    <button class="btn btn-success">Approuver</button>
+                                    <button class="btn btn-danger">Rejeter</button>
                                 </td>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                            <tr>
+                                <td>shop@exemple.com</td>
+                                <td>Le Shop Local</td>
+                                <td><span class="badge badge-success">Approuvé</span></td>
+                                <td>5</td>
+                                <td>10/01/2025</td>
+                                <td>-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- Onglet Soumissions -->
             <div id="submissions" class="tab-content">
-                <h3>Gestion des soumissions ({{ submissions|length }})</h3>
+                <h3>Gestion des soumissions (7)</h3>
                 <div style="max-height: 500px; overflow-y: auto;">
-                    {% for submission in submissions %}
-                        <div class="submission-preview">
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                                <div style="flex: 1;">
-                                    <div class="submission-title">{{ submission.title }}</div>
-                                    <div class="submission-description">{{ submission.description }}</div>
-                                    <small>
-                                        <strong>Par:</strong> {{ submission.company_name }} ({{ submission.user_email }}) |
-                                        <strong>Catégorie:</strong> {{ submission.category|title }} |
-                                        <strong>Soumis le:</strong> {{ submission.created_at.strftime('%d/%m/%Y à %H:%M') }}
-                                    </small>
-                                    {% if submission.image_url %}
-                                        <br><small><strong>Image:</strong> <a href="{{ submission.image_url }}" target="_blank">{{ submission.image_url[:50] }}...</a></small>
-                                    {% endif %}
-                                    {% if submission.link_url %}
-                                        <br><small><strong>Lien:</strong> <a href="{{ submission.link_url }}" target="_blank">{{ submission.link_url[:50] }}...</a></small>
-                                    {% endif %}
-                                </div>
-                                <div style="text-align: right;">
-                                    <span class="badge badge-{% if submission.status == 'pending' %}warning{% elif submission.status == 'approved' %}success{% elif submission.status == 'rejected' %}danger{% else %}secondary{% endif %}">
-                                        {% if submission.status == 'pending' %}En attente
-                                        {% elif submission.status == 'approved' %}Approuvé
-                                        {% elif submission.status == 'rejected' %}Rejeté
-                                        {% elif submission.status == 'published' %}Publié
-                                        {% else %}{{ submission.status|title }}{% endif %}
-                                    </span>
-                                    {% if submission.status == 'pending' %}
-                                        <br><br>
-                                        <form action="{{ url_for('approve_submission', submission_id=submission.id) }}" method="POST" style="display: inline;">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-success">Approuver</button>
-                                        </form>
-                                        <br>
-                                        <form action="{{ url_for('reject_submission', submission_id=submission.id) }}" method="POST" style="display: inline;">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Rejeter cette soumission ?')">Rejeter</button>
-                                        </form>
-                                    {% endif %}
-                                </div>
+                    <div class="submission-preview">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div class="submission-title">Nouvelle collection Printemps</div>
+                                <div class="submission-description">Découvrez notre toute nouvelle collection de vêtements pour le printemps avec des réductions jusqu'à -30%.</div>
+                                <small>
+                                    <strong>Par:</strong> Ma Boutique (boutique@exemple.com) |
+                                    <strong>Catégorie:</strong> Promotion |
+                                    <strong>Soumis le:</strong> 20/01/2025 à 14:30
+                                </small>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="badge badge-warning">En attente</span>
+                                <br><br>
+                                <button class="btn btn-success">Approuver</button>
+                                <br>
+                                <button class="btn btn-danger">Rejeter</button>
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
+
+                    <div class="submission-preview">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1;">
+                                <div class="submission-title">Ouverture d'un nouveau restaurant</div>
+                                <div class="submission-description">Nous sommes ravis de vous annoncer l'ouverture de notre restaurant italien au centre-ville !</div>
+                                <small>
+                                    <strong>Par:</strong> Bella Italia (restaurant@exemple.com) |
+                                    <strong>Catégorie:</strong> Événement |
+                                    <strong>Soumis le:</strong> 21/01/2025 à 10:15
+                                </small>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="badge badge-success">Approuvé</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

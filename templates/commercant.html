@@ -4,97 +4,310 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Commerçant du Mois</title>
-
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
   <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, sans-serif;
+    * {
       margin: 0;
-      background-color: #fff3ed;
-      color: #333;
+      padding: 0;
+      box-sizing: border-box;
     }
 
+    body {
+      font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    /* ========== HEADER ========== */
     header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       padding: 20px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #ccc;
-      background-color: #fff3ed;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      border-bottom: 2px solid rgba(0, 145, 255, 0.1);
+      animation: slideDown 0.6s ease-out;
+    }
+
+    @keyframes slideDown {
+      from {
+        transform: translateY(-100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     header h1 {
-      font-size: 24px;
-      margin: 0;
+      font-size: 26px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -0.5px;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
     }
 
     nav a {
-      margin-left: 20px;
       text-decoration: none;
-      color: #111;
+      color: #1a1a1a;
       font-weight: 500;
+      font-size: 14px;
+      padding: 10px 18px;
+      border-radius: 10px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: white;
+      border: 1px solid rgba(0, 145, 255, 0.15);
     }
 
+    nav a:hover {
+      background: #0091ff;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 145, 255, 0.3);
+      border-color: #0091ff;
+    }
+
+    /* ========== CONTAINER ========== */
     .container {
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      max-width: 900px;
+      margin: 50px auto;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .container h2 {
+      font-size: 32px;
+      color: #1e293b;
       text-align: center;
+      margin-bottom: 15px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .container h2::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(90deg, #0091ff, #00d4ff);
+      border-radius: 10px;
+    }
+
+    /* ========== IMAGE PRINCIPALE ========== */
+    .commercant-img-wrapper {
+      text-align: center;
+      margin: 40px 0;
+      position: relative;
+    }
+
+    .commercant-img-wrapper::before {
+      content: '🏅';
+      position: absolute;
+      top: -10px;
+      right: 20%;
+      font-size: 60px;
+      animation: bounce 2s infinite;
+      z-index: 1;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-15px);
+      }
     }
 
     .commercant-img {
       width: 100%;
-      max-width: 600px;
+      max-width: 650px;
       height: auto;
-      border-radius: 14px;
-      margin: 20px 0;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15),
+                  0 8px 30px rgba(0, 145, 255, 0.1);
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
     }
 
     .commercant-img:hover {
-      transform: scale(1.03);
+      transform: scale(1.03) translateY(-8px);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2),
+                  0 15px 40px rgba(0, 145, 255, 0.2);
     }
 
-    .btn-retour {
-      display: inline-block;
-      margin-top: 30px;
-      padding: 10px 20px;
-      background-color: #007bff;
+    /* ========== DESCRIPTION ========== */
+    .description {
+      font-size: 18px;
+      color: #475569;
+      line-height: 1.8;
+      text-align: center;
+      margin: 30px 0;
+      padding: 0 20px;
+    }
+
+    .description strong {
+      color: #0091ff;
+      font-weight: 700;
+    }
+
+    /* ========== LIEN INSTAGRAM ========== */
+    .insta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin: 25px auto;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
       color: white;
       text-decoration: none;
-      border-radius: 8px;
-      transition: background-color 0.3s ease;
-    }
-
-    .btn-retour:hover {
-      background-color: #0056b3;
-    }
-
-    .insta {
-      margin-top: 20px;
-      display: inline-block;
-      color: #e1306c;
-      text-decoration: none;
-      font-weight: bold;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 15px;
+      box-shadow: 0 8px 25px rgba(188, 24, 136, 0.4);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
     }
 
     .insta:hover {
-      text-decoration: underline;
+      transform: translateY(-3px);
+      box-shadow: 0 12px 35px rgba(188, 24, 136, 0.5);
     }
 
-    p {
-      font-size: 18px;
-      color: #444;
+    .insta::before {
+      content: '📸';
+      font-size: 20px;
+    }
+
+    /* ========== BOUTON RETOUR ========== */
+    .btn-retour {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 35px;
+      padding: 14px 28px;
+      background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 6px 20px rgba(0, 145, 255, 0.3);
+    }
+
+    .btn-retour:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 145, 255, 0.4);
+    }
+
+    /* ========== SECTION VOTE ========== */
+    .vote-section {
+      background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%);
+      border: 2px solid #fb923c;
+      border-radius: 16px;
+      padding: 25px;
+      margin: 35px 0;
+      text-align: center;
+    }
+
+    .vote-section h3 {
+      color: #ea580c;
+      font-size: 22px;
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .vote-section p {
+      color: #7c2d12;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    /* ========== ACTIONS CENTRÉES ========== */
+    .actions {
+      text-align: center;
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+      }
+
+      nav {
+        justify-content: center;
+      }
+
+      .container {
+        margin: 30px 20px;
+        padding: 30px 20px;
+      }
+
+      .container h2 {
+        font-size: 26px;
+      }
+
+      .commercant-img-wrapper::before {
+        font-size: 40px;
+        right: 10%;
+      }
+
+      .description {
+        font-size: 16px;
+      }
+
+      .insta, .btn-retour {
+        width: 100%;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
-
   <!-- Bandeau de navigation -->
   <header>
     <h1>Newsletter Locale</h1>
@@ -103,28 +316,41 @@
       <a href="/commercant">🏅 Commerçant du Mois</a>
       <a href="/apropos">À propos</a>
       <a href="/newsletter" target="_blank">Newsletter</a>
-      <a href="/register" rel="noopener noreferrer">Espace Commerçant</a>
+      <a href="/register">Espace Commerçant</a>
     </nav>
   </header>
 
   <div class="container">
-   <h2 style="font-size: 26px; color: #333; margin-bottom: 10px;">
-  🏅 Commerçant du mois de juin
-</h2>
+    <h2>🏅 Commerçant du mois de Janvier 2025</h2>
 
-    <a href="https://www.constructeur-maison-cantal.com/" target="_blank">
-      <img src="/static/imageteste.jpg" alt="Commerçant du Mois" class="commercant-img">
-    </a>
-    <p>
-      Chaque mois, vous élisez le commerçant préféré de la ville via notre sondage Instagram 📊.<br>
-      Le gagnant est mis à l’honneur ici, avec son image et ses infos ✨<br><br>
-      👉 Merci de continuer à soutenir vos commerçants locaux !
+    <div class="commercant-img-wrapper">
+      <a href="https://www.constructeur-maison-cantal.com/" target="_blank">
+        <img src="/static/imageteste.jpg" alt="Commerçant du Mois" class="commercant-img">
+      </a>
+    </div>
+
+    <div class="vote-section">
+      <h3>🗳️ Comment ça marche ?</h3>
+      <p>
+        Chaque mois, vous élisez le commerçant préféré de la ville via notre sondage Instagram.<br>
+        Le gagnant est mis à l'honneur ici avec son image et ses informations !
+      </p>
+    </div>
+
+    <p class="description">
+      <strong>Merci</strong> de continuer à soutenir vos commerçants locaux ! 💙<br>
+      Votre vote fait la différence et permet de valoriser les entreprises de notre région.
     </p>
 
-    <a class="insta" href="https://www.instagram.com/la.newsletteraurillac/?hl=fr" target="_blank">📸 Suivre la newsletter sur Instagram</a><br>
+    <div class="actions">
+      <a class="insta" href="https://www.instagram.com/la.newsletteraurillac/?hl=fr" target="_blank">
+        Suivre la newsletter sur Instagram
+      </a>
 
-    <a class="btn-retour" href="/">← Retour à l’accueil</a>
+      <a class="btn-retour" href="/">
+        ← Retour à l'accueil
+      </a>
+    </div>
   </div>
-
 </body>
 </html>
