@@ -20,62 +20,497 @@
   <meta name="referrer" content="no-referrer-when-downgrade" />
 
   <style>
-    html, body {
-      margin: 0; padding: 0;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #fff3ed; color: #222;
-      height: 100vh; overflow: hidden;
-    }
-    header { padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; background-color: #fff3ed; }
-    header h1 { font-size: 24px; margin: 0; }
-    nav a { margin-left: 20px; text-decoration: none; color: #111; font-weight: 500; }
-    .hero { padding: 30px 20px; text-align: center; position: relative; }
-    .hero h2 { font-size: 36px; font-weight: 600; margin-bottom: 20px; }
-    .newsletter-signup { margin-bottom: 20px; }
-    .newsletter-signup input[type="email"] {
-      padding: 10px; width: 250px; border-radius: 8px; border: 1px solid #ccc;
-    }
-    .newsletter-signup button[type="submit"] {
-      padding: 10px 20px; border-radius: 8px; background-color: #007bff; color: #fff; border: none; margin-left: 10px; cursor: pointer;
-    }
-    .subscriber-count { font-size: 16px; margin-bottom: 20px; color: #444; }
-    .partner-strip {
-      position: absolute; top: 65%; left: 0; transform: translateY(-50%);
-      width: 100%; overflow: hidden; z-index: 0; pointer-events: none;
-    }
-    .partner-strip .logos {
-      display: flex; align-items: center; gap: 60px;
-      animation: scroll 30s linear infinite;
-      white-space: nowrap; padding: 10px 0; width: max-content;
-    }
-    .partner-strip .logos a { pointer-events: auto; }
-    .partner-strip .logos img { height: 70px; opacity: 0.75; transition: transform 0.2s ease; }
-    .partner-strip .logos img:hover { transform: scale(1.1); opacity: 1; }
-    .partner-strip .logos .label { font-size: 20px; font-weight: bold; color: #333; white-space: nowrap; margin-right: 30px; }
-    @keyframes scroll { 0% { transform: translateX(120%); } 100% { transform: translateX(-100%); } }
-    .hero img.banner { width: 100%; max-width: 800px; border-radius: 40px; z-index: 1; position: relative; }
-    .actions { text-align: center; margin: 20px 0; }
-    .actions a {
-      display: inline-block; padding: 12px 20px; border-radius: 12px; text-decoration: none; font-weight: bold; margin: 10px; font-size: 16px; background-color: #ff8a5c; color: #fff;
-    }
-    .actions a:hover { background-color: #e06c3e; }
-    footer { padding: 10px; text-align: center; font-size: 14px; color: #555; background-color: #fff3ed; }
+    /* ==========================
+   🎨 DESIGN MODERNE GLASSMORPHISM
+   Inspiré : Coudac.com
+   Couleurs : Bleu #0091ff + Blanc
+========================== */
 
-    /* masquage accessible pour le champ piège */
-    .hp-wrap { position: absolute; left: -10000px; width: 1px; height: 1px; overflow: hidden; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    /* ✅ Style du bandeau pub */
-    .ads-left {
-      position: fixed;
-      top: 120px; /* sous le header */
-      left: 0;
-      width: 160px;
-      z-index: 999;
-    }
-    .ads-left ins {
-      width: 160px !important;
-      height: 600px !important;
-    }
+html, body {
+  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background-attachment: fixed;
+  color: #1a1a1a;
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Overlay pour adoucir le fond */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    rgba(0, 145, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.3) 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ==========================
+   HEADER - Glassmorphism
+========================== */
+header {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideDown 0.6s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+header h1 {
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #0091ff 0%, #0066ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+nav {
+  display: flex;
+  gap: 10px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #1a1a1a;
+  font-weight: 500;
+  font-size: 15px;
+  padding: 10px 18px;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+nav a:hover {
+  background: #0091ff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 145, 255, 0.4);
+}
+
+/* ==========================
+   HERO SECTION
+========================== */
+.hero {
+  padding: 80px 40px 60px;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero h2 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #0091ff 0%, #0066ff 50%, #004dff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero p {
+  font-size: 20px;
+  color: #2d3748;
+  margin-bottom: 40px;
+  font-weight: 500;
+  animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+/* ==========================
+   FORMULAIRE D'INSCRIPTION
+========================== */
+.newsletter-signup {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 25px;
+  animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.newsletter-signup input[type="email"] {
+  padding: 16px 24px;
+  width: 320px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  font-size: 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.newsletter-signup input[type="email"]:focus {
+  outline: none;
+  border-color: #0091ff;
+  box-shadow: 0 0 0 4px rgba(0, 145, 255, 0.15),
+              0 8px 25px rgba(0, 145, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.newsletter-signup button[type="submit"] {
+  padding: 16px 36px;
+  background: linear-gradient(135deg, #0091ff 0%, #0066ff 100%);
+  color: white;
+  border: none;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 145, 255, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.newsletter-signup button[type="submit"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.newsletter-signup button[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 145, 255, 0.4);
+}
+
+.newsletter-signup button[type="submit"]:hover::before {
+  left: 100%;
+}
+
+.newsletter-signup button[type="submit"]:active {
+  transform: translateY(-1px);
+}
+
+/* ==========================
+   COMPTEUR D'ABONNÉS - Badge moderne
+========================== */
+.subscriber-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(15px);
+  border-radius: 50px;
+  border: 2px solid rgba(0, 145, 255, 0.3);
+  font-size: 16px;
+  color: #1a1a1a;
+  font-weight: 600;
+  box-shadow: 0 8px 25px rgba(0, 145, 255, 0.15);
+  margin-bottom: 40px;
+  animation: fadeInUp 0.8s ease-out 0.8s both, pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 8px 25px rgba(0, 145, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 8px 35px rgba(0, 145, 255, 0.3);
+  }
+}
+
+.subscriber-count strong {
+  color: #0091ff;
+  font-size: 20px;
+}
+
+/* ==========================
+   IMAGE BANNER - Moderne
+========================== */
+.hero img.banner {
+  width: 100%;
+  max-width: 900px;
+  border-radius: 32px;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15),
+              0 10px 30px rgba(0, 145, 255, 0.2);
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInUp 1s ease-out 1s both;
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  position: relative;
+  z-index: 2;
+}
+
+.hero img.banner:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 35px 80px rgba(0, 0, 0, 0.2),
+              0 15px 40px rgba(0, 145, 255, 0.3);
+}
+
+/* ==========================
+   LOGOS PARTENAIRES DÉFILANTS
+========================== */
+.partner-strip {
+  position: absolute;
+  top: 68%;
+  left: 0;
+  transform: translateY(-50%);
+  width: 100%;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  padding: 30px 0;
+  background: linear-gradient(90deg, 
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%);
+}
+
+.partner-strip .logos {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+  animation: scroll 35s linear infinite;
+  white-space: nowrap;
+  padding: 10px 0;
+  width: max-content;
+}
+
+.partner-strip .logos a {
+  pointer-events: auto;
+  transition: all 0.3s ease;
+}
+
+.partner-strip .logos img {
+  height: 75px;
+  opacity: 0.7;
+  filter: grayscale(100%) brightness(1.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.partner-strip .logos img:hover {
+  transform: scale(1.15) translateY(-5px);
+  opacity: 1;
+  filter: grayscale(0%) brightness(1);
+  box-shadow: 0 12px 30px rgba(0, 145, 255, 0.25);
+}
+
+.partner-strip .logos .label {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0091ff;
+  white-space: nowrap;
+  margin-right: 40px;
+  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(120%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* ==========================
+   BOUTONS D'ACTION - Cards moderne
+========================== */
+.actions {
+  text-align: center;
+  margin: 60px 0 40px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+
+.actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 28px;
+  border-radius: 18px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  color: #1a1a1a;
+  border: 2px solid rgba(0, 145, 255, 0.2);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.actions a:hover {
+  background: linear-gradient(135deg, #0091ff 0%, #0066ff 100%);
+  color: white;
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0, 145, 255, 0.35);
+  border-color: transparent;
+}
+
+/* ==========================
+   FOOTER
+========================== */
+footer {
+  padding: 30px;
+  text-align: center;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.6);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(15px);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  margin-top: 60px;
+}
+
+/* ==========================
+   CHAMP HONEYPOT (caché)
+========================== */
+.hp-wrap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ==========================
+   📱 RESPONSIVE MOBILE
+========================== */
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+  }
+
+  nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .hero h2 {
+    font-size: 32px;
+  }
+
+  .hero p {
+    font-size: 16px;
+  }
+
+  .newsletter-signup {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .newsletter-signup input[type="email"] {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .newsletter-signup button[type="submit"] {
+    width: 100%;
+    max-width: 350px;
+  }
+
+  .hero img.banner {
+    border-radius: 24px;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .actions a {
+    width: 100%;
+    max-width: 350px;
+    justify-content: center;
+  }
+
+  .partner-strip .logos img {
+    height: 50px;
+  }
+}
+
+/* ==========================
+   ⚡ ANIMATIONS DE CHARGEMENT
+========================== */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Effet de chargement au hover des boutons */
+.newsletter-signup button[type="submit"],
+.actions a {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ==========================
+   🎨 EFFETS GLASSMORPHISM
+========================== */
+.glass-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
   </style>
 </head>
 <body>
