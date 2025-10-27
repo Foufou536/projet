@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - Newsletter Locale</title>
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
     <style>
         * {
             margin: 0;
@@ -122,6 +125,7 @@
             font-size: 28px;
             background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
             font-weight: 800;
@@ -353,15 +357,21 @@
                 <p>Rejoignez notre plateforme pour promouvoir votre entreprise !</p>
             </div>
 
-            <!-- Exemple d'alerte de succès -->
-            <!--
-            <div class="alert alert-success">
-                Inscription réussie ! Votre compte sera examiné sous peu.
-            </div>
-            -->
+            <!-- Messages Flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
 
             <!-- Formulaire -->
             <form method="POST">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
                 <div class="form-group">
                     <label for="email">Adresse email <span class="required">*</span></label>
                     <input 

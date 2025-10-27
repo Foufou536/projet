@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mon Espace - Newsletter Locale</title>
-    
+
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+
     <style>
         * {
             margin: 0;
@@ -114,6 +116,7 @@
             font-size: 32px;
             background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
             font-weight: 800;
@@ -531,20 +534,34 @@
 
     <div class="container">
         <div class="welcome">
-            <h2>Bonjour Ma Boutique ! 👋</h2>
+            <h2>Bonjour {{ user.company_name }} ! 👋</h2>
         </div>
 
-        <!-- Exemple d'alerte -->
-        <div class="alert alert-success">
-            Soumission créée avec succès !
-        </div>
+        <!-- Messages Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-        <!-- Statut du compte APPROUVÉ -->
-        <div class="status-card status-approved">
+        <!-- Statut du compte -->
+        <div class="status-card {% if user.status == 'pending' %}status-pending{% elif user.status == 'approved' %}status-approved{% else %}status-rejected{% endif %}">
             <h3>Statut de votre compte</h3>
-            <p><strong>Compte approuvé ✅</strong></p>
-            <p>Félicitations ! Vous pouvez maintenant soumettre vos contenus pour la newsletter.</p>
-            <a href="/submit" class="btn">Créer une soumission</a>
+            {% if user.status == 'pending' %}
+                <p><strong>En attente d'approbation</strong></p>
+                <p>Votre compte est en cours d'examen. Vous pourrez soumettre des contenus une fois votre compte approuvé.</p>
+            {% elif user.status == 'approved' %}
+                <p><strong>Compte approuvé ✅</strong></p>
+                <p>Félicitations ! Vous pouvez maintenant soumettre vos contenus pour la newsletter.</p>
+                <a href="/submit" class="btn">Créer une soumission</a>
+            {% else %}
+                <p><strong>Compte rejeté</strong></p>
+                <p>Votre demande n'a pas été acceptée. Contactez-nous si vous pensez qu'il s'agit d'une erreur.</p>
+            {% endif %}
         </div>
 
         <!-- Informations du compte -->
@@ -553,80 +570,80 @@
             <div class="info-grid">
                 <div class="info-item">
                     <strong>Email</strong>
-                    <span>boutique@exemple.com</span>
+                    <span>{{ user.email }}</span>
                 </div>
                 <div class="info-item">
                     <strong>Entreprise</strong>
-                    <span>Ma Boutique</span>
+                    <span>{{ user.company_name }}</span>
                 </div>
+                {% if user.phone %}
                 <div class="info-item">
                     <strong>Téléphone</strong>
-                    <span>06 12 34 56 78</span>
+                    <span>{{ user.phone }}</span>
                 </div>
+                {% endif %}
                 <div class="info-item">
                     <strong>Inscrit le</strong>
-                    <span>15/01/2025</span>
+                    <span>{{ user.created_at.strftime('%d/%m/%Y') }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Mes soumissions -->
         <div class="submissions-section">
-            <h3>Mes soumissions (3)</h3>
+            <h3>Mes soumissions ({{ submissions|length }})</h3>
             
-            <div class="table-wrapper">
-                <table class="submissions-table">
-                    <thead>
-                        <tr>
-                            <th>Titre</th>
-                            <th>Catégorie</th>
-                            <th>Statut</th>
-                            <th>Date</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Nouvelle collection Printemps</td>
-                            <td>Promotion</td>
-                            <td><span class="badge badge-pending">En attente</span></td>
-                            <td>20/01/2025</td>
-                            <td>
-                                <a href="#" class="btn-edit">✏️ Modifier</a>
-                                <button class="btn-delete">🗑️ Supprimer</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Soldes d'hiver -50%</td>
-                            <td>Promotion</td>
-                            <td><span class="badge badge-approved">Approuvé</span></td>
-                            <td>18/01/2025</td>
-                            <td>
-                                <a href="#" class="btn-edit">✏️ Modifier</a>
-                                <button class="btn-delete">🗑️ Supprimer</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Ouverture dimanche</td>
-                            <td>Événement</td>
-                            <td><span class="badge badge-published">Publié</span></td>
-                            <td>15/01/2025</td>
-                            <td>
-                                <button class="btn-delete">🗑️ Supprimer</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- État vide (à afficher si aucune soumission) -->
-            <!--
-            <div class="empty-state">
-                <div class="icon">📭</div>
-                <p>Aucune soumission pour le moment.</p>
-                <a href="/submit" class="btn">Créer votre première soumission</a>
-            </div>
-            -->
+            {% if submissions %}
+                <div class="table-wrapper">
+                    <table class="submissions-table">
+                        <thead>
+                            <tr>
+                                <th>Titre</th>
+                                <th>Catégorie</th>
+                                <th>Statut</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submissions %}
+                                <tr>
+                                    <td>{{ submission.title }}</td>
+                                    <td>{{ submission.category|title }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ submission.status }}">
+                                            {% if submission.status == 'pending' %}En attente
+                                            {% elif submission.status == 'approved' %}Approuvé
+                                            {% elif submission.status == 'rejected' %}Rejeté
+                                            {% elif submission.status == 'published' %}Publié
+                                            {% else %}{{ submission.status|title }}{% endif %}
+                                        </span>
+                                    </td>
+                                    <td>{{ submission.created_at.strftime('%d/%m/%Y') }}</td>
+                                    <td>
+                                        {% if submission.status in ['pending', 'approved'] %}
+                                            <a href="/edit_submission/{{ submission.id }}" class="btn-edit">✏️ Modifier</a>
+                                        {% endif %}
+                                        
+                                        <form action="/delete_submission/{{ submission.id }}" method="POST" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette soumission ?');">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn-delete">🗑️ Supprimer</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="icon">📭</div>
+                    <p>Aucune soumission pour le moment.</p>
+                    {% if user.status == 'approved' %}
+                        <a href="/submit" class="btn">Créer votre première soumission</a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
 </body>
