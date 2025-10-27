@@ -4,141 +4,386 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Créer une soumission - Newsletter Locale</title>
-
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+        * {
             margin: 0;
-            background-color: #fff3ed;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #1a1a1a;
+            min-height: 100vh;
         }
         
+        /* ========== HEADER ========== */
         header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
             padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ccc;
-            background-color: #fff3ed;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(0, 145, 255, 0.1);
         }
         
         header h1 {
-            font-size: 24px;
-            margin: 0;
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         nav a {
-            margin-left: 20px;
+            margin-left: 15px;
             text-decoration: none;
-            color: #111;
+            color: #1a1a1a;
             font-weight: 500;
-        }
-        
-        .container {
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 30px;
+            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
             background: white;
+            border: 1px solid rgba(0, 145, 255, 0.15);
+        }
+
+        nav a:hover {
+            background: #0091ff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 145, 255, 0.3);
+        }
+        
+        /* ========== CONTAINER ========== */
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 0 30px;
+        }
+
+        /* ========== PAGE HEADER ========== */
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 35px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header h2 {
+            font-size: 32px;
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            font-weight: 800;
+        }
+
+        .page-header p {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        /* ========== FORM CARD ========== */
+        .form-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        /* ========== ALERTS ========== */
+        .alert {
+            padding: 14px 18px;
+            margin-bottom: 24px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
         }
-        
+
+        .alert::before {
+            font-size: 18px;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        .alert-error::before {
+            content: '✕';
+        }
+
+        /* ========== FORM ========== */
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 26px;
         }
-        
+
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        input[type="text"], input[type="url"], textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
             font-size: 14px;
-            box-sizing: border-box;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
             font-family: inherit;
         }
-        
+
         textarea {
-            height: 120px;
+            min-height: 140px;
             resize: vertical;
         }
-        
-        input:focus, textarea:focus, select:focus {
+
+        input:focus,
+        textarea:focus,
+        select:focus {
             outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            border-color: #0091ff;
+            box-shadow: 0 0 0 4px rgba(0, 145, 255, 0.1);
+            transform: translateY(-1px);
         }
-        
-        .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-        }
-        
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        
-        .btn-secondary {
-            background-color: #6c757d;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #5a6268;
-        }
-        
-        .alert {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .required {
-            color: red;
-        }
-        
+
         .help-text {
+            display: block;
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        /* ========== CHARACTER COUNTER ========== */
+        .char-counter {
+            text-align: right;
+            color: #94a3b8;
             font-size: 12px;
-            color: #666;
-            margin-top: 5px;
+            margin-top: 4px;
         }
-        
+
+        .char-counter.warning {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+
+        /* ========== ACTIONS ========== */
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 35px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(0, 145, 255, 0.3);
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 145, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(148, 163, 184, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(148, 163, 184, 0.4);
+        }
+
+        /* ========== PREVIEW SECTION ========== */
         .preview-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 30px;
+            border-radius: 16px;
             margin-top: 30px;
-            border: 2px dashed #dee2e6;
+            border: 2px dashed #cbd5e1;
             display: none;
+            animation: fadeIn 0.5s ease-out;
         }
-        
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .preview-section.show {
             display: block;
         }
-        
-        .form-actions {
+
+        .preview-section h3 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-top: 30px;
+        }
+
+        .preview-section h3::before {
+            content: '👁️';
+            font-size: 24px;
+        }
+
+        #previewContent {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        /* ========== PREVIEW CARD ========== */
+        .preview-card {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .preview-content {
+            flex: 1;
+        }
+
+        .preview-category {
+            color: #0091ff;
+            font-weight: 700;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .preview-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .preview-description {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .preview-link {
+            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .preview-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 145, 255, 0.4);
+        }
+
+        .preview-image {
+            width: 200px;
+            height: auto;
+            border-radius: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .container {
+                padding: 0 20px;
+            }
+
+            .form-card {
+                padding: 30px 20px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .preview-card {
+                flex-direction: column;
+            }
+
+            .preview-image {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -152,127 +397,45 @@
     </header>
 
     <div class="container">
-        <h2>Créer une nouvelle soumission</h2>
-        <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter.</p>
-
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <form method="POST" id="submissionForm">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            
-            <div class="form-group">
-                <label for="title">Titre de votre annonce <span class="required">*</span></label>
-                <input type="text" id="title" name="title" required maxlength="100">
-                <div class="help-text">Maximum 100 caractères. Soyez accrocheur !</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="description">Description <span class="required">*</span></label>
-                <textarea id="description" name="description" required maxlength="500" placeholder="Décrivez votre offre, événement ou nouveauté..."></textarea>
-                <div class="help-text">Maximum 500 caractères. Donnez envie aux lecteurs !</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="image_url">URL de votre image</label>
-                <input type="url" id="image_url" name="image_url" placeholder="https://exemple.com/mon-image.jpg">
-                <div class="help-text">Lien vers une image qui illustre votre annonce (optionnel)</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="link_url">Lien vers votre site/page</label>
-                <input type="url" id="link_url" name="link_url" placeholder="https://mon-site.com">
-                <div class="help-text">Où diriger les lecteurs intéressés ? (optionnel)</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="category">Catégorie</label>
-                <select id="category" name="category">
-                    <option value="general">Général</option>
-                    <option value="promotion">Promotion/Soldes</option>
-                    <option value="evenement">Événement</option>
-                    <option value="nouveaute">Nouveauté</option>
-                    <option value="service">Service</option>
-                </select>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn">Soumettre</button>
-                <button type="button" class="btn btn-secondary" onclick="previewSubmission()">Prévisualiser</button>
-                <a href="/dashboard" class="btn btn-secondary" style="text-decoration: none; line-height: 1.5;">Annuler</a>
-            </div>
-        </form>
-
-        <div id="preview" class="preview-section">
-            <h3>Aperçu de votre soumission</h3>
-            <div id="previewContent"></div>
+        <div class="page-header">
+            <h2>✨ Créer une nouvelle soumission</h2>
+            <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter</p>
         </div>
-    </div>
 
-    <script>
-        function previewSubmission() {
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const imageUrl = document.getElementById('image_url').value;
-            const linkUrl = document.getElementById('link_url').value;
-            const category = document.getElementById('category').value;
+        <div class="form-card">
+            <!-- Exemple d'alerte
+            <div class="alert alert-error">
+                Veuillez remplir tous les champs obligatoires
+            </div>
+            -->
 
-            if (!title || !description) {
-                alert('Veuillez remplir au moins le titre et la description pour la prévisualisation.');
-                return;
-            }
+            <form method="POST" id="submissionForm">
+                <div class="form-group">
+                    <label for="title">Titre de votre annonce <span class="required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        required 
+                        maxlength="100"
+                        placeholder="Ex: Soldes d'hiver jusqu'à -50%"
+                    >
+                    <div class="help-text">Soyez accrocheur et concis !</div>
+                    <div class="char-counter" id="titleCounter">0/100 caractères</div>
+                </div>
 
-            let previewHtml = `
-                <div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: white; display: flex; gap: 20px; align-items: flex-start;">
-                    <div style="flex: 1;">
-                        <span style="color: #007bff; font-weight: bold; font-size: 12px;">${category.toUpperCase()}</span>
-                        <h4 style="margin: 5px 0 10px; color: #333;">${escapeHtml(title)}</h4>
-                        <p style="margin: 0 0 10px; color: #666;">${escapeHtml(description)}</p>
-            `;
+                <div class="form-group">
+                    <label for="description">Description <span class="required">*</span></label>
+                    <textarea 
+                        id="description" 
+                        name="description" 
+                        required 
+                        maxlength="500"
+                        placeholder="Décrivez votre offre, événement ou nouveauté..."
+                    ></textarea>
+                    <div class="help-text">Donnez envie aux lecteurs de cliquer !</div>
+                    <div class="char-counter" id="descCounter">0/500 caractères</div>
+                </div>
 
-            if (linkUrl) {
-                previewHtml += `<a href="${escapeHtml(linkUrl)}" style="background-color: #007bff; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px; display: inline-block;">En savoir plus</a>`;
-            }
-
-            previewHtml += `</div>`;
-
-            if (imageUrl) {
-                previewHtml += `<img src="${escapeHtml(imageUrl)}" style="width: 180px; height: auto; border-radius: 8px; flex-shrink: 0;" onerror="this.style.display='none'">`;
-            }
-
-            previewHtml += `</div>`;
-
-            document.getElementById('previewContent').innerHTML = previewHtml;
-            document.getElementById('preview').classList.add('show');
-            document.getElementById('preview').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        document.getElementById('title').addEventListener('input', function() {
-            const maxLength = this.maxLength;
-            const currentLength = this.value.length;
-            const helpText = this.parentNode.querySelector('.help-text');
-            helpText.textContent = `${currentLength}/${maxLength} caractères. Soyez accrocheur !`;
-        });
-
-        document.getElementById('description').addEventListener('input', function() {
-            const maxLength = this.maxLength;
-            const currentLength = this.value.length;
-            const helpText = this.parentNode.querySelector('.help-text');
-            helpText.textContent = `${currentLength}/${maxLength} caractères. Donnez envie aux lecteurs !`;
-        });
-    </script>
-</body>
-</html>
+                <div class="form-group">
+                    <label for="image_url">URL de votre image</label

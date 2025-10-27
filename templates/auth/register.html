@@ -4,177 +4,421 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inscription - Newsletter Locale</title>
-
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+        * {
             margin: 0;
-            background-color: #fff3ed;
-            color: #333;
-        }
-        
-        header {
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ccc;
-            background-color: #fff3ed;
-        }
-        
-        header h1 {
-            font-size: 24px;
-            margin: 0;
-        }
-        
-        nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #111;
-            font-weight: 500;
-        }
-        
-        .container {
-            max-width: 500px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        input[type="email"], input[type="password"], input[type="text"], input[type="tel"] {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
+            padding: 0;
             box-sizing: border-box;
         }
-        
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* ========== ANIMATED BACKGROUND ========== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 30% 40%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            animation: pulse 15s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* ========== REGISTER CONTAINER ========== */
+        .register-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 550px;
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== TOP NAVIGATION ========== */
+        .top-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .top-nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .top-nav a:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* ========== REGISTER BOX ========== */
+        .register-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* ========== HEADER ========== */
+        .register-header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .register-header .icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .register-header h2 {
+            font-size: 28px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .register-header p {
+            color: #64748b;
+            font-size: 15px;
+        }
+
+        /* ========== ALERTS ========== */
+        .alert {
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .alert::before {
+            font-size: 18px;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            color: #991b1b;
+            border: 2px solid #fca5a5;
+        }
+
+        .alert-error::before {
+            content: '✕';
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border: 2px solid #6ee7b7;
+        }
+
+        .alert-success::before {
+            content: '✓';
+        }
+
+        /* ========== FORM ========== */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .required {
+            color: #ef4444;
+        }
+
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: inherit;
+        }
+
         input:focus {
             outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            border-color: #10b981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+            transform: translateY(-1px);
         }
-        
+
+        small {
+            display: block;
+            margin-top: 6px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        /* ========== BUTTON ========== */
         .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
             width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            position: relative;
+            overflow: hidden;
+            margin-top: 10px;
         }
-        
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
         .btn:hover {
-            background-color: #0056b3;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(16, 185, 129, 0.5);
         }
-        
-        .alert {
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 8px;
+
+        .btn:active {
+            transform: translateY(-1px);
         }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+        /* ========== INFO BOX ========== */
+        .info-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #fbbf24;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 25px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
         }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        .info-box::before {
+            content: '📋';
+            font-size: 24px;
+            flex-shrink: 0;
         }
-        
-        .text-center {
+
+        .info-box p {
+            color: #78350f;
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .info-box strong {
+            color: #92400e;
+        }
+
+        /* ========== FOOTER LINKS ========== */
+        .form-footer {
             text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #e2e8f0;
         }
-        
-        .link {
-            color: #007bff;
+
+        .form-footer p {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .form-footer a {
+            color: #10b981;
             text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        
-        .link:hover {
+
+        .form-footer a:hover {
+            color: #059669;
             text-decoration: underline;
         }
-        
-        .required {
-            color: red;
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .register-box {
+                padding: 40px 25px;
+            }
+
+            .register-header h2 {
+                font-size: 24px;
+            }
+
+            .top-nav {
+                flex-wrap: wrap;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Newsletter Locale</h1>
-        <nav>
+    <div class="register-container">
+        <!-- Navigation -->
+        <div class="top-nav">
             <a href="/">Accueil</a>
             <a href="/login">Se connecter</a>
-        </nav>
-    </header>
+        </div>
 
-    <div class="container">
-        <h2 class="text-center">Inscription Commerçant</h2>
-        <p class="text-center">Rejoignez notre plateforme pour promouvoir votre entreprise !</p>
+        <div class="register-box">
+            <div class="register-header">
+                <div class="icon">🚀</div>
+                <h2>Inscription Commerçant</h2>
+                <p>Rejoignez notre plateforme pour promouvoir votre entreprise !</p>
+            </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ 'error' if category == 'error' else 'success' }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+            <!-- Exemple d'alerte de succès -->
+            <!--
+            <div class="alert alert-success">
+                Inscription réussie ! Votre compte sera examiné sous peu.
+            </div>
+            -->
 
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            
-            <div class="form-group">
-                <label for="email">Adresse email <span class="required">*</span></label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="password">Mot de passe <span class="required">*</span></label>
-                <input type="password" id="password" name="password" required minlength="6">
-                <small>Au moins 6 caractères</small>
-            </div>
-            
-            <div class="form-group">
-                <label for="company_name">Nom de l'entreprise <span class="required">*</span></label>
-                <input type="text" id="company_name" name="company_name" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="phone">Téléphone</label>
-                <input type="tel" id="phone" name="phone">
-            </div>
-            
-            <button type="submit" class="btn">S'inscrire</button>
-        </form>
+            <!-- Formulaire -->
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email">Adresse email <span class="required">*</span></label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email" 
+                        placeholder="votre@email.com"
+                        required
+                    >
+                </div>
 
-        <div class="text-center" style="margin-top: 20px;">
-            <p>Déjà inscrit ? <a href="/login" class="link">Se connecter</a></p>
-            <p><strong>Note :</strong> Votre compte sera examiné avant activation.</p>
+                <div class="form-group">
+                    <label for="password">Mot de passe <span class="required">*</span></label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="••••••••"
+                        required 
+                        minlength="6"
+                    >
+                    <small>Au moins 6 caractères</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="company_name">Nom de l'entreprise <span class="required">*</span></label>
+                    <input 
+                        type="text" 
+                        id="company_name" 
+                        name="company_name" 
+                        placeholder="Ma Boutique"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Téléphone</label>
+                    <input 
+                        type="tel" 
+                        id="phone" 
+                        name="phone" 
+                        placeholder="06 12 34 56 78"
+                    >
+                </div>
+
+                <button type="submit" class="btn">S'inscrire</button>
+
+                <div class="info-box">
+                    <p>
+                        <strong>Note importante :</strong> Votre compte sera examiné par notre équipe avant activation. Vous recevrez un email de confirmation.
+                    </p>
+                </div>
+            </form>
+
+            <div class="form-footer">
+                <p>Déjà inscrit ? <a href="/login">Se connecter</a></p>
+            </div>
         </div>
     </div>
 </body>
