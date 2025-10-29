@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admi n - La Newsletter Aurillac</title>
+    <title>Mon Dashboard - La Newsletter Aurillac</title>
     <style>
         * {
             margin: 0;
@@ -19,7 +19,7 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
@@ -37,6 +37,11 @@
         h1 {
             color: #667eea;
             font-size: 2em;
+        }
+
+        .user-info {
+            color: #6b7280;
+            font-size: 0.9em;
         }
 
         .header-buttons {
@@ -65,6 +70,15 @@
             transform: translateY(-2px);
         }
 
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
         .btn-danger {
             background: #ef4444;
             color: white;
@@ -80,135 +94,50 @@
         }
 
         .alert {
-            background: #d1fae5;
-            border-left: 4px solid #10b981;
             padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 25px;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
             color: #065f46;
         }
 
-        .alert-success:before {
-            content: "✓ ";
-            font-weight: bold;
+        .alert-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            color: #92400e;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+        .alert-error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
         }
 
-        .stat-card {
+        .status-card {
             background: white;
             padding: 25px;
             border-radius: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-            text-align: center;
-            border-top: 4px solid #667eea;
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-number {
-            font-size: 3em;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: #6b7280;
-            font-size: 0.95em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .content-card {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
 
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-
-        .tab {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            font-size: 1em;
-            cursor: pointer;
-            color: #6b7280;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-            font-weight: 600;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        h2 {
+        .status-card h2 {
             color: #1f2937;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-size: 1.5em;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        thead {
-            background: #f9fafb;
-        }
-
-        th {
-            padding: 15px;
-            text-align: left;
-            color: #6b7280;
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 0.5px;
-        }
-
-        td {
-            padding: 15px;
-            border-bottom: 1px solid #e5e7eb;
-        }
-
-        tbody tr:hover {
-            background: #f9fafb;
         }
 
         .badge {
             display: inline-block;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.85em;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
             font-weight: 600;
+            margin-top: 10px;
         }
 
         .badge-pending {
@@ -226,6 +155,76 @@
             color: #991b1b;
         }
 
+        .submissions-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .submissions-section h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .submission-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .submission-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 3px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .submission-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .submission-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .submission-category {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 12px;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .submission-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .submission-meta {
+            display: flex;
+            gap: 20px;
+            color: #9ca3af;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .submission-actions {
+            display: flex;
+            gap: 10px;
+        }
+
         .empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -239,27 +238,20 @@
             opacity: 0.5;
         }
 
-        form {
-            display: inline;
-        }
-
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
             header {
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
             }
 
-            table {
-                font-size: 0.9em;
+            .submission-header {
+                flex-direction: column;
+                gap: 10px;
             }
 
-            th, td {
-                padding: 10px;
+            .submission-actions {
+                flex-direction: column;
             }
         }
     </style>
@@ -267,14 +259,13 @@
 <body>
     <div class="container">
         <header>
-            <h1>Dashboard Admin</h1>
+            <div>
+                <h1>Mon Dashboard</h1>
+                <div class="user-info">{{ user.company_name }} - {{ user.email }}</div>
+            </div>
             <div class="header-buttons">
-                <a href="{{ url_for('generate_newsletter') }}" class="btn btn-primary">
-                    📧 Générer la newsletter
-                </a>
-                <a href="{{ url_for('admin_logout') }}" class="btn btn-danger">
-                    Déconnexion
-                </a>
+                <a href="{{ url_for('index') }}" class="btn btn-secondary">Accueil</a>
+                <a href="{{ url_for('user_logout') }}" class="btn btn-danger">Déconnexion</a>
             </div>
         </header>
 
@@ -288,199 +279,89 @@
             {% endif %}
         {% endwith %}
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.subscriber_count }}</div>
-                <div class="stat-label">Abonnés Newsletter</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.pending_users }}</div>
-                <div class="stat-label">Utilisateurs en attente</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ stats.pending_submissions }}</div>
-                <div class="stat-label">Soumissions en attente</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">{{ users|length }}</div>
-                <div class="stat-label">Total utilisateurs</div>
-            </div>
+        <div class="status-card">
+            <h2>Statut de votre compte</h2>
+            <p>
+                {% if user.status == 'pending' %}
+                    <span class="badge badge-pending">⏳ En attente d'approbation</span>
+                    <p style="color: #6b7280; margin-top: 15px;">Votre compte est en cours de vérification. Vous pourrez soumettre des articles une fois votre compte approuvé par notre équipe.</p>
+                {% elif user.status == 'approved' %}
+                    <span class="badge badge-approved">✓ Compte approuvé</span>
+                    <p style="color: #6b7280; margin-top: 15px;">Votre compte est actif ! Vous pouvez maintenant soumettre des articles pour la newsletter.</p>
+                    <a href="{{ url_for('submit_newsletter') }}" class="btn btn-primary" style="margin-top: 15px;">
+                        ✍️ Soumettre un article
+                    </a>
+                {% else %}
+                    <span class="badge badge-rejected">✗ Compte rejeté</span>
+                    <p style="color: #6b7280; margin-top: 15px;">Malheureusement, votre compte n'a pas été approuvé. Contactez-nous pour plus d'informations.</p>
+                {% endif %}
+            </p>
         </div>
 
-        <div class="content-card">
-            <div class="tabs">
-                <button class="tab active" onclick="switchTab(event, 'subscribers')">Abonnés Newsletter</button>
-                <button class="tab" onclick="switchTab(event, 'users')">Utilisateurs</button>
-                <button class="tab" onclick="switchTab(event, 'submissions')">Soumissions</button>
-            </div>
+        <div class="submissions-section">
+            <h2>Mes soumissions ({{ submissions|length }})</h2>
 
-            <!-- Onglet Abonnés -->
-            <div id="subscribers" class="tab-content active">
-                <h2>Liste des abonnés ({{ subscribers|length }})</h2>
-                
-                {% if subscribers %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th style="text-align: center;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for email in subscribers %}
-                            <tr>
-                                <td>{{ email }}</td>
-                                <td style="text-align: center;">
-                                    <form method="POST" action="{{ url_for('delete_subscriber', email=email) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet abonné ?');">
-                                        <button type="submit" class="btn btn-danger btn-small">Supprimer</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                        <p>Aucun abonné pour le moment</p>
+            {% if submissions %}
+                {% for submission in submissions %}
+                <div class="submission-card">
+                    <div class="submission-header">
+                        <div>
+                            <div class="submission-title">{{ submission.title }}</div>
+                            <span class="submission-category">{{ submission.category }}</span>
+                        </div>
+                        <div>
+                            {% if submission.status == 'pending' %}
+                                <span class="badge badge-pending">En attente</span>
+                            {% elif submission.status == 'approved' %}
+                                <span class="badge badge-approved">Approuvé</span>
+                            {% else %}
+                                <span class="badge badge-rejected">Rejeté</span>
+                            {% endif %}
+                        </div>
                     </div>
-                {% endif %}
-            </div>
 
-            <!-- Onglet Utilisateurs -->
-            <div id="users" class="tab-content">
-                <h2>Liste des utilisateurs inscrits</h2>
-                
-                {% if users %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Email</th>
-                                <th>Entreprise</th>
-                                <th>Téléphone</th>
-                                <th>Statut</th>
-                                <th>Soumissions</th>
-                                <th style="text-align: center;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for user in users %}
-                            <tr>
-                                <td>{{ user.email }}</td>
-                                <td>{{ user.company_name }}</td>
-                                <td>{{ user.phone or '-' }}</td>
-                                <td>
-                                    {% if user.status == 'pending' %}
-                                        <span class="badge badge-pending">En attente</span>
-                                    {% elif user.status == 'approved' %}
-                                        <span class="badge badge-approved">Approuvé</span>
-                                    {% else %}
-                                        <span class="badge badge-rejected">Rejeté</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ user.submission_count }}</td>
-                                <td style="text-align: center;">
-                                    {% if user.status == 'pending' %}
-                                        <form method="POST" action="{{ url_for('approve_user', user_id=user.id) }}" style="display: inline;">
-                                            <button type="submit" class="btn btn-primary btn-small">Approuver</button>
-                                        </form>
-                                        <form method="POST" action="{{ url_for('reject_user', user_id=user.id) }}" style="display: inline;">
-                                            <button type="submit" class="btn btn-danger btn-small">Rejeter</button>
-                                        </form>
-                                    {% else %}
-                                        <span style="color: #9ca3af;">-</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <p>Aucun utilisateur inscrit</p>
+                    <div class="submission-description">
+                        {{ submission.description }}
                     </div>
-                {% endif %}
-            </div>
 
-            <!-- Onglet Soumissions -->
-            <div id="submissions" class="tab-content">
-                <h2>Liste des soumissions</h2>
-                
-                {% if submissions %}
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Titre</th>
-                                <th>Entreprise</th>
-                                <th>Catégorie</th>
-                                <th>Statut</th>
-                                <th>Date</th>
-                                <th style="text-align: center;">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for sub in submissions %}
-                            <tr>
-                                <td><strong>{{ sub.title }}</strong></td>
-                                <td>{{ sub.company_name }}</td>
-                                <td>{{ sub.category }}</td>
-                                <td>
-                                    {% if sub.status == 'pending' %}
-                                        <span class="badge badge-pending">En attente</span>
-                                    {% elif sub.status == 'approved' %}
-                                        <span class="badge badge-approved">Approuvé</span>
-                                    {% else %}
-                                        <span class="badge badge-rejected">Rejeté</span>
-                                    {% endif %}
-                                </td>
-                                <td>{{ sub.created_at.strftime('%d/%m/%Y') if sub.created_at else '-' }}</td>
-                                <td style="text-align: center;">
-                                    {% if sub.status == 'pending' %}
-                                        <form method="POST" action="{{ url_for('approve_submission', submission_id=sub.id) }}" style="display: inline;">
-                                            <button type="submit" class="btn btn-primary btn-small">Approuver</button>
-                                        </form>
-                                        <form method="POST" action="{{ url_for('reject_submission', submission_id=sub.id) }}" style="display: inline;">
-                                            <button type="submit" class="btn btn-danger btn-small">Rejeter</button>
-                                        </form>
-                                    {% else %}
-                                        <span style="color: #9ca3af;">-</span>
-                                    {% endif %}
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="empty-state">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <p>Aucune soumission pour le moment</p>
+                    <div class="submission-meta">
+                        <span>📅 {{ submission.created_at.strftime('%d/%m/%Y à %H:%M') if submission.created_at else 'Date inconnue' }}</span>
+                        {% if submission.image_url %}
+                            <span>🖼️ Image incluse</span>
+                        {% endif %}
+                        {% if submission.link_url %}
+                            <span>🔗 Lien inclus</span>
+                        {% endif %}
                     </div>
-                {% endif %}
-            </div>
+
+                    <div class="submission-actions">
+                        {% if submission.status == 'pending' %}
+                            <a href="{{ url_for('edit_submission', submission_id=submission.id) }}" class="btn btn-secondary btn-small">
+                                ✏️ Modifier
+                            </a>
+                        {% endif %}
+                        <form method="POST" action="{{ url_for('delete_submission', submission_id=submission.id) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette soumission ?');">
+                            <button type="submit" class="btn btn-danger btn-small">
+                                🗑️ Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p>Vous n'avez pas encore de soumission</p>
+                    {% if user.status == 'approved' %}
+                        <a href="{{ url_for('submit_newsletter') }}" class="btn btn-primary" style="margin-top: 20px;">
+                            ✍️ Créer ma première soumission
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
     </div>
-
-    <script>
-        function switchTab(event, tabName) {
-            // Masquer tous les contenus
-            const contents = document.querySelectorAll('.tab-content');
-            contents.forEach(content => content.classList.remove('active'));
-
-            // Désactiver tous les onglets
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => tab.classList.remove('active'));
-
-            // Activer l'onglet cliqué et son contenu
-            event.currentTarget.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
-    </script>
 </body>
 </html>
