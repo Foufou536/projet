@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer une soumission - Newsletter Locale</title>
+    <title>Créer une soumission - Newsletter Aurillac</title>
     <style>
         * {
             margin: 0;
@@ -12,432 +12,494 @@
         }
 
         body {
-            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            color: #1a1a1a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
             min-height: 100vh;
+            padding: 20px;
         }
-        
-        /* ========== HEADER ========== */
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
         header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 20px 40px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 2px solid rgba(0, 145, 255, 0.1);
         }
-        
-        header h1 {
-            font-size: 26px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0ea5e9;
         }
-        
-        nav a {
-            margin-left: 15px;
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s;
             text-decoration: none;
-            color: #1a1a1a;
-            font-weight: 500;
-            font-size: 14px;
-            padding: 10px 18px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            background: white;
-            border: 1px solid rgba(0, 145, 255, 0.15);
+            display: inline-block;
         }
 
-        nav a:hover {
-            background: #0091ff;
+        .btn-secondary {
+            background: #6b7280;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0, 145, 255, 0.3);
-        }
-        
-        /* ========== CONTAINER ========== */
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 30px;
         }
 
-        /* ========== PAGE HEADER ========== */
-        .page-header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 35px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            text-align: center;
-            animation: fadeInUp 0.6s ease-out;
+        .btn-secondary:hover {
+            background: #4b5563;
         }
 
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .btn-danger {
+            background: #ef4444;
+            color: white;
         }
 
-        .page-header h2 {
-            font-size: 32px;
-            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 12px;
-            font-weight: 800;
+        .btn-danger:hover {
+            background: #dc2626;
         }
 
-        .page-header p {
-            color: #64748b;
-            font-size: 16px;
-        }
-
-        /* ========== FORM CARD ========== */
         .form-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
+            background: white;
             padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-            animation: fadeInUp 0.7s ease-out;
+            border-radius: 15px;
+            box-shadow: 0 3px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
         }
 
-        /* ========== ALERTS ========== */
-        .alert {
-            padding: 14px 18px;
-            margin-bottom: 24px;
-            border-radius: 12px;
-            font-weight: 500;
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            color: #0ea5e9;
+            font-size: 2em;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
-            font-size: 14px;
         }
 
-        .alert::before {
-            font-size: 18px;
+        .form-header p {
+            color: #6b7280;
+            font-size: 1.05em;
         }
 
-        .alert-error {
-            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-            color: #991b1b;
-            border: 2px solid #fca5a5;
-        }
-
-        .alert-error::before {
-            content: '✕';
-        }
-
-        /* ========== FORM ========== */
         .form-group {
-            margin-bottom: 26px;
+            margin-bottom: 25px;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
             font-weight: 600;
-            color: #1e293b;
-            font-size: 14px;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 0.95em;
         }
 
-        .required {
+        label span {
             color: #ef4444;
         }
 
         input[type="text"],
         input[type="url"],
-        textarea,
-        select {
+        select,
+        textarea {
             width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            background: white;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
             font-family: inherit;
         }
 
-        textarea {
-            min-height: 140px;
-            resize: vertical;
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
 
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: none;
-            border-color: #0091ff;
-            box-shadow: 0 0 0 4px rgba(0, 145, 255, 0.1);
-            transform: translateY(-1px);
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .char-count {
+            text-align: right;
+            color: #9ca3af;
+            font-size: 0.85em;
+            margin-top: 5px;
         }
 
         .help-text {
-            display: block;
-            margin-top: 6px;
-            color: #64748b;
-            font-size: 13px;
-            line-height: 1.5;
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-style: italic;
         }
 
-        /* ========== CHARACTER COUNTER ========== */
-        .char-counter {
-            text-align: right;
-            color: #94a3b8;
-            font-size: 12px;
-            margin-top: 4px;
-        }
-
-        .char-counter.warning {
-            color: #f59e0b;
-            font-weight: 600;
-        }
-
-        /* ========== ACTIONS ========== */
         .form-actions {
             display: flex;
-            gap: 12px;
-            margin-top: 35px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 14px 28px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            background: #0ea5e9;
             color: white;
-            box-shadow: 0 6px 20px rgba(0, 145, 255, 0.3);
             flex: 1;
-            justify-content: center;
+            padding: 14px 28px;
+            font-size: 1.05em;
+            font-weight: 600;
         }
 
         .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0, 145, 255, 0.4);
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
         }
 
-        .btn-secondary {
-            background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-            color: white;
-            box-shadow: 0 6px 20px rgba(148, 163, 184, 0.3);
-        }
-
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(148, 163, 184, 0.4);
-        }
-
-        /* ========== PREVIEW SECTION ========== */
-        .preview-section {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            padding: 30px;
-            border-radius: 16px;
-            margin-top: 30px;
-            border: 2px dashed #cbd5e1;
-            display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .preview-section.show {
-            display: block;
-        }
-
-        .preview-section h3 {
-            color: #1e293b;
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .preview-section h3::before {
-            content: '👁️';
-            font-size: 24px;
-        }
-
-        #previewContent {
+        .btn-outline {
             background: white;
+            color: #0ea5e9;
+            border: 2px solid #0ea5e9;
+            flex: 1;
+            padding: 14px 28px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .btn-outline:hover {
+            background: #f0f9ff;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+
+        /* Modal Prévisualisation */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .preview-card {
+            border: 2px solid #e5e7eb;
             padding: 25px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        }
-
-        /* ========== PREVIEW CARD ========== */
-        .preview-card {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-        }
-
-        .preview-content {
-            flex: 1;
+            margin: 20px 0;
         }
 
         .preview-category {
-            color: #0091ff;
-            font-weight: 700;
-            font-size: 12px;
+            color: #0ea5e9;
+            font-weight: bold;
+            font-size: 0.85em;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .preview-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 12px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 15px;
         }
 
         .preview-description {
-            color: #64748b;
+            color: #6b7280;
             line-height: 1.6;
             margin-bottom: 15px;
         }
 
+        .preview-image {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
         .preview-link {
-            background: linear-gradient(135deg, #0091ff 0%, #005ca8 100%);
+            background: #0ea5e9;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 6px;
             display: inline-block;
-            transition: all 0.3s ease;
+            margin-top: 10px;
         }
 
-        .preview-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 145, 255, 0.4);
-        }
-
-        .preview-image {
-            width: 200px;
-            height: auto;
-            border-radius: 12px;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 768px) {
-            header {
-                flex-direction: column;
-                gap: 15px;
-                padding: 20px;
-            }
-
-            .container {
-                padding: 0 20px;
-            }
-
             .form-card {
-                padding: 30px 20px;
+                padding: 25px;
             }
 
             .form-actions {
                 flex-direction: column;
             }
 
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .preview-card {
+            header {
                 flex-direction: column;
-            }
-
-            .preview-image {
-                width: 100%;
+                gap: 15px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Newsletter Locale</h1>
-        <nav>
-            <a href="/dashboard">Mon Espace</a>
-            <a href="/logout">Déconnexion</a>
-        </nav>
-    </header>
-
     <div class="container">
-        <div class="page-header">
-            <h2>✨ Créer une nouvelle soumission</h2>
-            <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter</p>
-        </div>
+        <header>
+            <div class="logo">Newsletter Locale</div>
+            <div class="header-buttons">
+                <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Mon Espace</a>
+                <a href="{{ url_for('user_logout') }}" class="btn btn-danger">Déconnexion</a>
+            </div>
+        </header>
 
         <div class="form-card">
-            <!-- Exemple d'alerte
-            <div class="alert alert-error">
-                Veuillez remplir tous les champs obligatoires
+            <div class="form-header">
+                <h1>
+                    <span>✨</span> Créer une nouvelle soumission
+                </h1>
+                <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter</p>
             </div>
-            -->
 
-            <form method="POST" id="submissionForm">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('submit_newsletter') }}" id="submissionForm">
                 <div class="form-group">
-                    <label for="title">Titre de votre annonce <span class="required">*</span></label>
+                    <label for="category">Type d'annonce <span>*</span></label>
+                    <select name="category" id="category" required>
+                        <option value="">-- Sélectionnez une catégorie --</option>
+                        <option value="solde">🏷️ Solde jusqu'à -60%</option>
+                        <option value="offre">🎁 Offre promotionnelle</option>
+                        <option value="evenement">📅 Actualité / Événement</option>
+                        <option value="conseil">💡 Conseil de la rédaction</option>
+                        <option value="nouveaute">⭐ Nouveauté / Lancement</option>
+                        <option value="general">📰 Annonce générale</option>
+                    </select>
+                    <div class="help-text">Choisissez la catégorie qui correspond le mieux à votre annonce</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Titre de votre annonce <span>*</span></label>
                     <input 
                         type="text" 
-                        id="title" 
                         name="title" 
-                        required 
+                        id="title" 
+                        placeholder="Ex: Soldes d'hiver jusqu'à -50%" 
                         maxlength="100"
-                        placeholder="Ex: Soldes d'hiver jusqu'à -50%"
+                        required
+                        oninput="updateCharCount('title', 'titleCount', 100)"
                     >
+                    <div class="char-count">
+                        <span id="titleCount">0</span>/100 caractères
+                    </div>
                     <div class="help-text">Soyez accrocheur et concis !</div>
-                    <div class="char-counter" id="titleCounter">0/100 caractères</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="description">Description <span class="required">*</span></label>
+                    <label for="description">Description <span>*</span></label>
                     <textarea 
-                        id="description" 
                         name="description" 
-                        required 
-                        maxlength="500"
+                        id="description" 
                         placeholder="Décrivez votre offre, événement ou nouveauté..."
+                        maxlength="500"
+                        required
+                        oninput="updateCharCount('description', 'descCount', 500)"
                     ></textarea>
+                    <div class="char-count">
+                        <span id="descCount">0</span>/500 caractères
+                    </div>
                     <div class="help-text">Donnez envie aux lecteurs de cliquer !</div>
-                    <div class="char-counter" id="descCounter">0/500 caractères</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="image_url">URL de votre image</label
+                    <label for="image_url">URL de votre image</label>
+                    <input 
+                        type="url" 
+                        name="image_url" 
+                        id="image_url" 
+                        placeholder="https://exemple.com/mon-image.jpg"
+                    >
+                    <div class="help-text">Format recommandé : JPEG ou PNG - Taille max : 500 Ko</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="link_url">Lien vers votre site web</label>
+                    <input 
+                        type="url" 
+                        name="link_url" 
+                        id="link_url" 
+                        placeholder="https://mon-site-web.fr"
+                    >
+                    <div class="help-text">Les lecteurs seront redirigés vers cette adresse en cliquant sur "Lire la suite"</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="showPreview()">
+                        👁️ Prévisualiser
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        📤 Soumettre ma publication
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Prévisualisation -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePreview()">×</button>
+            <h2 style="color: #1f2937; margin-bottom: 20px;">📋 Aperçu de votre annonce</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Voici comment votre annonce apparaîtra dans la newsletter :</p>
+            
+            <div class="preview-card" id="previewContent">
+                <!-- Le contenu sera généré par JavaScript -->
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closePreview()">Fermer l'aperçu</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateCharCount(inputId, countId, maxLength) {
+            const input = document.getElementById(inputId);
+            const count = document.getElementById(countId);
+            count.textContent = input.value.length;
+            
+            if (input.value.length > maxLength * 0.9) {
+                count.style.color = '#ef4444';
+            } else {
+                count.style.color = '#9ca3af';
+            }
+        }
+
+        function showPreview() {
+            const category = document.getElementById('category');
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const imageUrl = document.getElementById('image_url').value;
+            const linkUrl = document.getElementById('link_url').value;
+
+            if (!title || !description || !category.value) {
+                alert('⚠️ Veuillez remplir au moins le titre, la description et la catégorie avant de prévisualiser.');
+                return;
+            }
+
+            const categoryText = category.options[category.selectedIndex].text;
+            
+            let previewHTML = `
+                <div class="preview-category">${categoryText}</div>
+                <div class="preview-title">${title}</div>
+                <div class="preview-description">${description}</div>
+            `;
+
+            if (imageUrl) {
+                previewHTML += `<img src="${imageUrl}" class="preview-image" alt="${title}" onerror="this.style.display='none'">`;
+            }
+
+            if (linkUrl) {
+                previewHTML += `<a href="${linkUrl}" class="preview-link" target="_blank">Lire la suite</a>`;
+            }
+
+            document.getElementById('previewContent').innerHTML = previewHTML;
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        // Fermer le modal en cliquant en dehors
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePreview();
+            }
+        });
+    </script>
+</body>
+</html>
