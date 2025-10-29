@@ -347,6 +347,8 @@
             {% endwith %}
 
             <form method="POST" action="{{ url_for('submit_newsletter') }}" id="submissionForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
                 <div class="form-group">
                     <label for="category">Type d'annonce <span>*</span></label>
                     <select name="category" id="category" required>
