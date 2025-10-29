@@ -3,234 +3,504 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier une soumission - Newsletter Locale</title>
-
-<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
-
+    <title>Créer une soumission - Newsletter Aurillac</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, sans-serif;
+        * {
             margin: 0;
-            background-color: #fff3ed;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
         header {
-            padding: 20px 40px;
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ccc;
-            background-color: #fff3ed;
         }
-        
-        header h1 {
-            font-size: 24px;
-            margin: 0;
+
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #0ea5e9;
         }
-        
-        nav a {
-            margin-left: 20px;
-            text-decoration: none;
-            color: #111;
-            font-weight: 500;
+
+        .header-buttons {
+            display: flex;
+            gap: 15px;
         }
-        
-        .container {
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        input[type="text"], input[type="url"], textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 14px;
-            box-sizing: border-box;
-            font-family: inherit;
-        }
-        
-        textarea {
-            height: 120px;
-            resize: vertical;
-        }
-        
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-        }
-        
+
         .btn {
-            background-color: #007bff;
-            color: white;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border: none;
             border-radius: 8px;
+            font-size: 1em;
             cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
         }
-        
-        .btn:hover {
-            background-color: #0056b3;
-        }
-        
+
         .btn-secondary {
-            background-color: #6c757d;
+            background: #6b7280;
+            color: white;
         }
-        
+
         .btn-secondary:hover {
-            background-color: #5a6268;
+            background: #4b5563;
         }
-        
-        .alert {
-            padding: 12px;
-            margin-bottom: 20px;
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .form-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 3px 20px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h1 {
+            color: #0ea5e9;
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .form-header p {
+            color: #6b7280;
+            font-size: 1.05em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        label span {
+            color: #ef4444;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
             border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: inherit;
         }
-        
-        .alert-error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
         }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
         }
-        
-        .required {
-            color: red;
-        }
-        
-        .help-text {
-            font-size: 12px;
-            color: #666;
+
+        .char-count {
+            text-align: right;
+            color: #9ca3af;
+            font-size: 0.85em;
             margin-top: 5px;
         }
-        
+
+        .help-text {
+            color: #6b7280;
+            font-size: 0.9em;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
         .form-actions {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
         }
-        
-        .status-info {
-            background: #e3f2fd;
-            padding: 15px;
+
+        .btn-primary {
+            background: #0ea5e9;
+            color: white;
+            flex: 1;
+            padding: 14px 28px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background: #0284c7;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-outline {
+            background: white;
+            color: #0ea5e9;
+            border: 2px solid #0ea5e9;
+            flex: 1;
+            padding: 14px 28px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .btn-outline:hover {
+            background: #f0f9ff;
+        }
+
+        .alert {
+            padding: 15px 20px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #2196f3;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+
+        /* Modal Prévisualisation */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+        }
+
+        .preview-card {
+            border: 2px solid #e5e7eb;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .preview-category {
+            color: #0ea5e9;
+            font-weight: bold;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .preview-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+
+        .preview-description {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .preview-link {
+            background: #0ea5e9;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 25px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            header {
+                flex-direction: column;
+                gap: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>Newsletter Locale</h1>
-        <nav>
-            <a href="/dashboard">Mon Espace</a>
-            <a href="/logout">Déconnexion</a>
-        </nav>
-    </header>
-
     <div class="container">
-        <h2>Modifier votre soumission</h2>
-        
-        <div class="status-info">
-            <strong>Statut actuel :</strong> 
-            {% if submission.status == 'pending' %}En attente de validation
-            {% elif submission.status == 'approved' %}Approuvé
-            {% elif submission.status == 'rejected' %}Rejeté
-            {% else %}{{ submission.status|title }}{% endif %}
-        </div>
+        <header>
+            <div class="logo">Newsletter Locale</div>
+            <div class="header-buttons">
+                <a href="{{ url_for('user_dashboard') }}" class="btn btn-secondary">Mon Espace</a>
+                <a href="{{ url_for('user_logout') }}" class="btn btn-danger">Déconnexion</a>
+            </div>
+        </header>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
+        <div class="form-card">
+            <div class="form-header">
+                <h1>
+                    <span>✨</span> Créer une nouvelle soumission
+                </h1>
+                <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter</p>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('submit_newsletter') }}" id="submissionForm">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                
+                <div class="form-group">
+                    <label for="category">Type d'annonce <span>*</span></label>
+                    <select name="category" id="category" required>
+                        <option value="">-- Sélectionnez une catégorie --</option>
+                        <option value="solde">🏷️ Solde jusqu'à -60%</option>
+                        <option value="offre">🎁 Offre promotionnelle</option>
+                        <option value="evenement">📅 Actualité / Événement</option>
+                        <option value="conseil">💡 Conseil de la rédaction</option>
+                        <option value="nouveaute">⭐ Nouveauté / Lancement</option>
+                        <option value="general">📰 Annonce générale</option>
+                    </select>
+                    <div class="help-text">Choisissez la catégorie qui correspond le mieux à votre annonce</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="title">Titre de votre annonce <span>*</span></label>
+                    <input 
+                        type="text" 
+                        name="title" 
+                        id="title" 
+                        placeholder="Ex: Soldes d'hiver jusqu'à -50%" 
+                        maxlength="100"
+                        required
+                        oninput="updateCharCount('title', 'titleCount', 100)"
+                    >
+                    <div class="char-count">
+                        <span id="titleCount">0</span>/100 caractères
                     </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+                    <div class="help-text">Soyez accrocheur et concis !</div>
+                </div>
 
-        <form method="POST">
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label for="description">Description <span>*</span></label>
+                    <textarea 
+                        name="description" 
+                        id="description" 
+                        placeholder="Décrivez votre offre, événement ou nouveauté..."
+                        maxlength="500"
+                        required
+                        oninput="updateCharCount('description', 'descCount', 500)"
+                    ></textarea>
+                    <div class="char-count">
+                        <span id="descCount">0</span>/500 caractères
+                    </div>
+                    <div class="help-text">Donnez envie aux lecteurs de cliquer !</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image_url">URL de votre image</label>
+                    <input 
+                        type="url" 
+                        name="image_url" 
+                        id="image_url" 
+                        placeholder="https://exemple.com/mon-image.jpg"
+                    >
+                    <div class="help-text">Format recommandé : JPEG ou PNG - Taille max : 500 Ko</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="link_url">Lien vers votre site web</label>
+                    <input 
+                        type="url" 
+                        name="link_url" 
+                        id="link_url" 
+                        placeholder="https://mon-site-web.fr"
+                    >
+                    <div class="help-text">Les lecteurs seront redirigés vers cette adresse en cliquant sur "Lire la suite"</div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" onclick="showPreview()">
+                        👁️ Prévisualiser
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        📤 Soumettre ma publication
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Prévisualisation -->
+    <div class="modal" id="previewModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePreview()">×</button>
+            <h2 style="color: #1f2937; margin-bottom: 20px;">📋 Aperçu de votre annonce</h2>
+            <p style="color: #6b7280; margin-bottom: 20px;">Voici comment votre annonce apparaîtra dans la newsletter :</p>
             
-            <div class="form-group">
-                <label for="title">Titre de votre annonce <span class="required">*</span></label>
-                <input type="text" id="title" name="title" required maxlength="100" value="{{ submission.title }}">
-                <div class="help-text">Maximum 100 caractères</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="description">Description <span class="required">*</span></label>
-                <textarea id="description" name="description" required maxlength="500">{{ submission.description }}</textarea>
-                <div class="help-text">Maximum 500 caractères</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="image_url">URL de votre image</label>
-                <input type="url" id="image_url" name="image_url" value="{{ submission.image_url or '' }}">
-                <div class="help-text">Lien vers une image (optionnel)</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="link_url">Lien vers votre site/page</label>
-                <input type="url" id="link_url" name="link_url" value="{{ submission.link_url or '' }}">
-                <div class="help-text">Lien de redirection (optionnel)</div>
-            </div>
-            
-            <div class="form-group">
-                <label for="category">Catégorie</label>
-                <select id="category" name="category">
-                    <option value="general" {% if submission.category == 'general' %}selected{% endif %}>Général</option>
-                    <option value="promotion" {% if submission.category == 'promotion' %}selected{% endif %}>Promotion/Soldes</option>
-                    <option value="evenement" {% if submission.category == 'evenement' %}selected{% endif %}>Événement</option>
-                    <option value="nouveaute" {% if submission.category == 'nouveaute' %}selected{% endif %}>Nouveauté</option>
-                    <option value="service" {% if submission.category == 'service' %}selected{% endif %}>Service</option>
-                </select>
+            <div class="preview-card" id="previewContent">
+                <!-- Le contenu sera généré par JavaScript -->
             </div>
 
-            <div class="form-actions">
-                <button type="submit" class="btn">Enregistrer les modifications</button>
-                <a href="/dashboard" class="btn btn-secondary" style="text-decoration: none; line-height: 1.5;">Annuler</a>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="closePreview()">Fermer l'aperçu</button>
             </div>
-        </form>
+        </div>
     </div>
 
     <script>
-        document.getElementById('title').addEventListener('input', function() {
-            const maxLength = this.maxLength;
-            const currentLength = this.value.length;
-            const helpText = this.parentNode.querySelector('.help-text');
-            helpText.textContent = `${currentLength}/${maxLength} caractères`;
-        });
+        function updateCharCount(inputId, countId, maxLength) {
+            const input = document.getElementById(inputId);
+            const count = document.getElementById(countId);
+            count.textContent = input.value.length;
+            
+            if (input.value.length > maxLength * 0.9) {
+                count.style.color = '#ef4444';
+            } else {
+                count.style.color = '#9ca3af';
+            }
+        }
 
-        document.getElementById('description').addEventListener('input', function() {
-            const maxLength = this.maxLength;
-            const currentLength = this.value.length;
-            const helpText = this.parentNode.querySelector('.help-text');
-            helpText.textContent = `${currentLength}/${maxLength} caractères`;
+        function showPreview() {
+            const category = document.getElementById('category');
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+            const imageUrl = document.getElementById('image_url').value;
+            const linkUrl = document.getElementById('link_url').value;
+
+            if (!title || !description || !category.value) {
+                alert('⚠️ Veuillez remplir au moins le titre, la description et la catégorie avant de prévisualiser.');
+                return;
+            }
+
+            const categoryText = category.options[category.selectedIndex].text;
+            
+            let previewHTML = `
+                <div class="preview-category">${categoryText}</div>
+                <div class="preview-title">${title}</div>
+                <div class="preview-description">${description}</div>
+            `;
+
+            if (imageUrl) {
+                previewHTML += `<img src="${imageUrl}" class="preview-image" alt="${title}" onerror="this.style.display='none'">`;
+            }
+
+            if (linkUrl) {
+                previewHTML += `<a href="${linkUrl}" class="preview-link" target="_blank">Lire la suite</a>`;
+            }
+
+            document.getElementById('previewContent').innerHTML = previewHTML;
+            document.getElementById('previewModal').classList.add('active');
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.remove('active');
+        }
+
+        // Fermer le modal en cliquant en dehors
+        document.getElementById('previewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePreview();
+            }
         });
     </script>
 </body>

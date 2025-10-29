@@ -262,6 +262,14 @@
             padding: 25px;
             border-radius: 12px;
             margin: 20px 0;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            background: #f9fafb;
+        }
+
+        .preview-content {
+            flex: 1;
         }
 
         .preview-category {
@@ -275,31 +283,40 @@
         .preview-title {
             font-size: 1.5em;
             font-weight: bold;
-            color: #1f2937;
+            color: #003d73;
             margin-bottom: 15px;
         }
 
         .preview-description {
-            color: #6b7280;
+            color: #4b5563;
             line-height: 1.6;
             margin-bottom: 15px;
         }
 
+        .preview-image-container {
+            flex-shrink: 0;
+        }
+
         .preview-image {
-            width: 100%;
-            max-width: 300px;
+            width: 180px;
+            height: auto;
             border-radius: 8px;
-            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .preview-link {
-            background: #0ea5e9;
+            background: #0066b3;
             color: white;
             padding: 10px 20px;
             text-decoration: none;
             border-radius: 6px;
             display: inline-block;
             margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .preview-link:hover {
+            background: #004d87;
         }
 
         @media (max-width: 768px) {
