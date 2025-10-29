@@ -341,6 +341,7 @@
                             </a>
                         {% endif %}
                         <form method="POST" action="{{ url_for('delete_submission', submission_id=submission.id) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette soumission ?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                             <button type="submit" class="btn btn-danger btn-small">
                                 🗑️ Supprimer
                             </button>
