@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer une soumission - Newsletter Aurillac</title>
+    <title>Modifier une soumission - Newsletter Aurillac</title>
     <style>
         * {
             margin: 0;
@@ -83,23 +83,27 @@
         }
 
         .form-header {
-            text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .form-header h1 {
-            color: #0ea5e9;
+            color: #1f2937;
             font-size: 2em;
             margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
         }
 
-        .form-header p {
-            color: #6b7280;
-            font-size: 1.05em;
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .status-pending {
+            background: #fef3c7;
+            color: #92400e;
         }
 
         .form-group {
@@ -183,8 +187,8 @@
 
         .btn-outline {
             background: white;
-            color: #0ea5e9;
-            border: 2px solid #0ea5e9;
+            color: #6b7280;
+            border: 2px solid #6b7280;
             flex: 1;
             padding: 14px 28px;
             font-size: 1.05em;
@@ -192,7 +196,7 @@
         }
 
         .btn-outline:hover {
-            background: #f0f9ff;
+            background: #f9fafb;
         }
 
         .alert {
@@ -211,118 +215,6 @@
             background: #d1fae5;
             border-left: 4px solid #10b981;
             color: #065f46;
-        }
-
-        /* Modal Prévisualisation */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            max-width: 800px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-        }
-
-        .preview-card {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 30px;
-            margin: 20px 0;
-        }
-
-        .preview-layout {
-            display: flex;
-            gap: 30px;
-            align-items: flex-start;
-        }
-
-        .preview-content {
-            flex: 1;
-        }
-
-        .preview-category {
-            color: #0ea5e9;
-            font-weight: bold;
-            font-size: 0.75em;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 12px;
-        }
-
-        .preview-title {
-            font-size: 1.4em;
-            font-weight: 700;
-            color: #003d73;
-            margin-bottom: 15px;
-            line-height: 1.3;
-        }
-
-        .preview-description {
-            color: #4b5563;
-            line-height: 1.7;
-            margin-bottom: 20px;
-            font-size: 0.95em;
-        }
-
-        .preview-image-container {
-            flex-shrink: 0;
-        }
-
-        .preview-image {
-            width: 180px;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .preview-link {
-            background: #0066b3;
-            color: white;
-            padding: 12px 24px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-            font-weight: 600;
-            font-size: 0.9em;
-        }
-
-        .preview-link:hover {
-            background: #004d87;
         }
 
         @media (max-width: 768px) {
@@ -353,10 +245,10 @@
 
         <div class="form-card">
             <div class="form-header">
-                <h1>
-                    <span>✨</span> Créer une nouvelle soumission
-                </h1>
-                <p>Remplissez le formulaire ci-dessous pour proposer votre contenu à la newsletter</p>
+                <h1>Modifier votre soumission</h1>
+                <div class="status-badge status-pending">
+                    Statut actuel : En attente de validation
+                </div>
             </div>
 
             {% with messages = get_flashed_messages(with_categories=true) %}
@@ -369,21 +261,20 @@
                 {% endif %}
             {% endwith %}
 
-            <form method="POST" action="{{ url_for('submit_newsletter') }}" id="submissionForm">
+            <form method="POST" action="{{ url_for('edit_submission', submission_id=submission.id) }}">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                
+
                 <div class="form-group">
                     <label for="category">Type d'annonce <span>*</span></label>
                     <select name="category" id="category" required>
                         <option value="">-- Sélectionnez une catégorie --</option>
-                        <option value="solde">🏷️ Solde jusqu'à -60%</option>
-                        <option value="offre">🎁 Offre promotionnelle</option>
-                        <option value="evenement">📅 Actualité / Événement</option>
-                        <option value="conseil">💡 Conseil de la rédaction</option>
-                        <option value="nouveaute">⭐ Nouveauté / Lancement</option>
-                        <option value="general">📰 Annonce générale</option>
+                        <option value="solde" {% if submission.category == 'solde' %}selected{% endif %}>🏷️ Solde jusqu'à -60%</option>
+                        <option value="offre" {% if submission.category == 'offre' %}selected{% endif %}>🎁 Offre promotionnelle</option>
+                        <option value="evenement" {% if submission.category == 'evenement' %}selected{% endif %}>📅 Actualité / Événement</option>
+                        <option value="conseil" {% if submission.category == 'conseil' %}selected{% endif %}>💡 Conseil de la rédaction</option>
+                        <option value="nouveaute" {% if submission.category == 'nouveaute' %}selected{% endif %}>⭐ Nouveauté / Lancement</option>
+                        <option value="general" {% if submission.category == 'general' %}selected{% endif %}>📰 Annonce générale</option>
                     </select>
-                    <div class="help-text">Choisissez la catégorie qui correspond le mieux à votre annonce</div>
                 </div>
 
                 <div class="form-group">
@@ -392,15 +283,14 @@
                         type="text" 
                         name="title" 
                         id="title" 
-                        placeholder="Ex: Soldes d'hiver jusqu'à -50%" 
+                        value="{{ submission.title }}"
                         maxlength="100"
                         required
                         oninput="updateCharCount('title', 'titleCount', 100)"
                     >
                     <div class="char-count">
-                        <span id="titleCount">0</span>/100 caractères
+                        <span id="titleCount">{{ submission.title|length }}</span>/100 caractères
                     </div>
-                    <div class="help-text">Soyez accrocheur et concis !</div>
                 </div>
 
                 <div class="form-group">
@@ -408,15 +298,13 @@
                     <textarea 
                         name="description" 
                         id="description" 
-                        placeholder="Décrivez votre offre, événement ou nouveauté..."
                         maxlength="500"
                         required
                         oninput="updateCharCount('description', 'descCount', 500)"
-                    ></textarea>
+                    >{{ submission.description }}</textarea>
                     <div class="char-count">
-                        <span id="descCount">0</span>/500 caractères
+                        <span id="descCount">{{ submission.description|length }}</span>/500 caractères
                     </div>
-                    <div class="help-text">Donnez envie aux lecteurs de cliquer !</div>
                 </div>
 
                 <div class="form-group">
@@ -425,9 +313,10 @@
                         type="url" 
                         name="image_url" 
                         id="image_url" 
+                        value="{{ submission.image_url or '' }}"
                         placeholder="https://exemple.com/mon-image.jpg"
                     >
-                    <div class="help-text">Format recommandé : JPEG ou PNG - Taille max : 500 Ko</div>
+                    <div class="help-text">Format recommandé : JPEG ou PNG</div>
                 </div>
 
                 <div class="form-group">
@@ -436,37 +325,21 @@
                         type="url" 
                         name="link_url" 
                         id="link_url" 
+                        value="{{ submission.link_url or '' }}"
                         placeholder="https://mon-site-web.fr"
                     >
-                    <div class="help-text">Les lecteurs seront redirigés vers cette adresse en cliquant sur "Lire la suite"</div>
+                    <div class="help-text">Lien de redirection (optionnel)</div>
                 </div>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-outline" onclick="showPreview()">
-                        👁️ Prévisualiser
-                    </button>
+                    <a href="{{ url_for('user_dashboard') }}" class="btn btn-outline">
+                        Annuler
+                    </a>
                     <button type="submit" class="btn btn-primary">
-                        📤 Soumettre ma publication
+                        💾 Enregistrer les modifications
                     </button>
                 </div>
             </form>
-        </div>
-    </div>
-
-    <!-- Modal Prévisualisation -->
-    <div class="modal" id="previewModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closePreview()">×</button>
-            <h2 style="color: #1f2937; margin-bottom: 20px;">📋 Aperçu de votre annonce</h2>
-            <p style="color: #6b7280; margin-bottom: 20px;">Voici comment votre annonce apparaîtra dans la newsletter :</p>
-            
-            <div class="preview-card" id="previewContent">
-                <!-- Le contenu sera généré par JavaScript -->
-            </div>
-
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn btn-secondary" onclick="closePreview()">Fermer l'aperçu</button>
-            </div>
         </div>
     </div>
 
@@ -482,50 +355,6 @@
                 count.style.color = '#9ca3af';
             }
         }
-
-        function showPreview() {
-            const category = document.getElementById('category');
-            const title = document.getElementById('title').value;
-            const description = document.getElementById('description').value;
-            const imageUrl = document.getElementById('image_url').value;
-            const linkUrl = document.getElementById('link_url').value;
-
-            if (!title || !description || !category.value) {
-                alert('⚠️ Veuillez remplir au moins le titre, la description et la catégorie avant de prévisualiser.');
-                return;
-            }
-
-            const categoryText = category.options[category.selectedIndex].text;
-            
-            let previewHTML = '<div class="preview-content">';
-            previewHTML += `<div class="preview-category">${categoryText}</div>`;
-            previewHTML += `<div class="preview-title">${title}</div>`;
-            previewHTML += `<div class="preview-description">${description}</div>`;
-
-            if (linkUrl) {
-                previewHTML += `<a href="${linkUrl}" class="preview-link" target="_blank">Lire la suite</a>`;
-            }
-            
-            previewHTML += '</div>';
-
-            if (imageUrl) {
-                previewHTML += `<div class="preview-image-container"><img src="${imageUrl}" class="preview-image" alt="${title}" onerror="this.style.display='none'"></div>`;
-            }
-
-            document.getElementById('previewContent').innerHTML = previewHTML;
-            document.getElementById('previewModal').classList.add('active');
-        }
-
-        function closePreview() {
-            document.getElementById('previewModal').classList.remove('active');
-        }
-
-        // Fermer le modal en cliquant en dehors
-        document.getElementById('previewModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closePreview();
-            }
-        });
     </script>
 </body>
 </html>
