@@ -332,6 +332,7 @@
                                 <td>{{ email }}</td>
                                 <td style="text-align: center;">
                                     <form method="POST" action="{{ url_for('delete_subscriber', email=email) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet abonné ?');">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                         <button type="submit" class="btn btn-danger btn-small">Supprimer</button>
                                     </form>
                                 </td>
@@ -444,9 +445,11 @@
                                 <td style="text-align: center;">
                                     {% if sub.status == 'pending' %}
                                         <form method="POST" action="{{ url_for('approve_submission', submission_id=sub.id) }}" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                             <button type="submit" class="btn btn-primary btn-small">Approuver</button>
                                         </form>
                                         <form method="POST" action="{{ url_for('reject_submission', submission_id=sub.id) }}" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                                             <button type="submit" class="btn btn-danger btn-small">Rejeter</button>
                                         </form>
                                     {% else %}
